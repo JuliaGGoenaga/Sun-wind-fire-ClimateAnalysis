@@ -27,7 +27,9 @@ La web tiene dos pestañas que comparten el mismo EPW:
 1. Sube el `.epw`.
 2. Ajusta idioma, tipografía, encabezado, pie de página, umbrales y las láminas a incluir.
 3. Protección solar: elige para cada fachada (N, S, E, O) sin protección, voladizo, lamas o ambos, con su ángulo.
-4. Textos: «Generar con LLM» (Ollama `:11434` / LM Studio `:1234`; recomendado `llama3.1:8b` o `gemma4`),
+4. Textos: «Generar con LLM» con Ollama (`:11434`), LM Studio (`:1234`) o **cualquier servicio compatible con
+   OpenAI** (BionicGPT, vLLM, Jan, LocalAI…: URL del API, clave si la pide y nombre del modelo, que también se
+   puede escribir a mano); recomendado `llama3.1:8b` o `gemma4`,
    o «Copiar prompt», pégalo en otro asistente y pega el JSON de respuesta, o escribe directamente.
 5. Descarga **PDF** (vectorial, fuente embebida), **PPTX** (A3; cada gráfico es una imagen de 300 ppp y
    los textos, títulos, encabezado y pie son editables) o **SVG** (vectorial completo).
