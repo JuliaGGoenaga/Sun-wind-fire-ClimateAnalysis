@@ -130,17 +130,50 @@ async function loadFonts() {
   $("font").innerHTML = j.fonts.map((f) => `<option${f === j.default ? " selected" : ""}>${f}</option>`).join("");
 }
 
+const LLM_HINTS = {
+  ollama: "por defecto (localhost:11434)",
+  lmstudio: "por defecto (localhost:1234)",
+  openai: "https://servidor/v1 (obligatoria)",
+};
+function llmPrefs(save) {  // remember engine, URL and model in this browser (never the API key)
+  try {
+    if (save) {
+      localStorage.setItem("climate-report-llm", JSON.stringify(
+        { backend: $("backend").value, url: $("llm_url").value, model: $("model").value }));
+      return null;
+    }
+    return JSON.parse(localStorage.getItem("climate-report-llm") || "null");
+  } catch (_) { return null; }
+}
+function syncLlmFields() {
+  const b = $("backend").value;
+  $("llm_url").placeholder = LLM_HINTS[b] || "";
+  $("llm_key_row").hidden = b === "ollama";
+  $("gen").disabled = !$("model").value.trim();
+}
+
 async function loadModels() {
+  syncLlmFields();
   const q = new URLSearchParams({ backend: $("backend").value });
   if ($("llm_url").value) q.set("url", $("llm_url").value);
-  const j = await api("/api/llm/models?" + q);
-  // prefer the models that follow the reference style best (tested): llama3.1:8b, gemma4
-  const pref = ["llama3.1:8b", "gemma4"].map((p) => j.models.find((m) => m.startsWith(p))).find(Boolean);
-  $("model").innerHTML = j.models.map((m) => `<option${m === pref ? " selected" : ""}>${m}</option>`).join("");
+  const key = $("llm_key").value.trim();
+  const r = await transport("/api/llm/models?" + q, key ? { headers: { "X-Api-Key": key } } : {});
+  const j = await r.json().catch(() => ({ ok: false, models: [] }));
+  $("model-list").innerHTML = j.models.map((m) => `<option value="${m}"></option>`).join("");
+  const current = $("model").value.trim();
+  if (!current || (j.ok && j.models.length && !j.models.includes(current))) {
+    // prefer the models that follow the reference style best (tested): llama3.1:8b, gemma4
+    const pref = ["llama3.1:8b", "gemma4"].map((p) => j.models.find((m) => m.startsWith(p))).find(Boolean);
+    $("model").value = pref || j.models[0] || current;
+  }
   const el = $("llmstatus");
-  el.textContent = j.ok ? `● ${j.models.length} modelo(s) disponible(s)` : "● LLM no disponible: modo manual";
+  el.textContent = j.ok ? `● ${j.models.length} modelo(s) disponible(s)`
+    : ($("backend").value === "openai" && $("model").value.trim()
+      ? "● No se pudo listar modelos: se usará el que has escrito"
+      : "● LLM no disponible: modo manual");
+  el.title = j.error || "";
   el.classList.toggle("warn", !j.ok);
-  $("gen").disabled = !j.ok || !j.models.length;
+  syncLlmFields();
 }
 
 async function doRender() {
@@ -203,8 +236,8 @@ $("gen").addEventListener("click", async () => {
       $("busy-title").textContent = `El LLM está redactando (${i + 1}/${steps.length})`;
       $("busy-text").textContent = `${name} · ${$("model").value}`;
       const j = await api(`/api/${RID}/generate`, {
-        settings: settings(), backend: $("backend").value, model: $("model").value,
-        url: $("llm_url").value || null, keys: [key],
+        settings: settings(), backend: $("backend").value, model: $("model").value.trim(),
+        url: $("llm_url").value || null, api_key: $("llm_key").value.trim() || null, keys: [key],
       });
       setTexts(j);
     }
@@ -253,8 +286,17 @@ $("paste").addEventListener("input", async () => {
 });
 
 $("render").addEventListener("click", render);
-$("backend").addEventListener("change", loadModels);
+$("backend").addEventListener("change", () => { $("model").value = ""; loadModels(); llmPrefs(true); });
 $("refresh").addEventListener("click", loadModels);
+for (const id of ["llm_url", "llm_key"]) $(id).addEventListener("change", () => { loadModels(); llmPrefs(true); });
+$("model").addEventListener("input", () => { syncLlmFields(); llmPrefs(true); });
+(() => {  // restore the last engine / URL / model
+  const p = llmPrefs(false);
+  if (!p) return;
+  if (p.backend) $("backend").value = p.backend;
+  $("llm_url").value = p.url || "";
+  $("model").value = p.model || "";
+})();
 for (const id of ["language", "font", "utci_sun_exposed"]) $(id).addEventListener("change", () => RID && render());
 
 document.querySelectorAll(".dl").forEach((btn) => btn.addEventListener("click", async () => {
