@@ -126,8 +126,8 @@ function makeShadeTrace(polygon) {
     theta: polygon.theta,
     r: polygon.r,
     fill: "toself",
-    fillcolor: "rgba(23, 107, 89, 0.28)",
-    line: { color: "rgba(23, 107, 89, 0.45)", width: 1 },
+    fillcolor: "rgba(42, 69, 165, 0.22)",
+    line: { color: "rgba(42, 69, 165, 0.45)", width: 1 },
     hoverinfo: "skip",
     showlegend: false
   };
@@ -145,7 +145,7 @@ function makeChartTraces(climate, records, orientation, shadeOptions = {}) {
         name: MONTHS[month - 1],
         theta: day21.map(record => record.azimuth),
         r: day21.map(record => 90 - record.elevation),
-        line: { color: "rgba(75, 96, 89, 0.34)", width: 1 },
+        line: { color: "rgba(29, 36, 51, 0.30)", width: 1 },
         hoverinfo: "skip",
         showlegend: false
       });
@@ -176,7 +176,7 @@ function makeChartTraces(climate, records, orientation, shadeOptions = {}) {
       size: 5,
       opacity: 0.76,
       color: records.map(record => record.temperature),
-      colorscale: [[0, "#2777a4"], [0.48, "#70b5a2"], [1, "#f1a138"]],
+      colorscale: [[0, "#4b6ba9"], [0.25, "#aac8f7"], [0.45, "#f5ef67"], [0.7, "#ef9c15"], [1, "#ea2600"]],
       cmin: -10,
       cmax: 35,
       colorbar: { title: { text: "°C", side: "right" }, thickness: 11, len: 0.72, outlinewidth: 0 },
@@ -193,7 +193,7 @@ function makeChartTraces(climate, records, orientation, shadeOptions = {}) {
     name: "Orientación",
     theta: [orientation, orientation],
     r: [0, 90],
-    line: { color: "#176b59", width: 2, dash: "dot" },
+    line: { color: "#2a45a5", width: 2, dash: "dot" },
     hovertemplate: `Orientación ${orientation}°<extra></extra>`,
     showlegend: false
   });
@@ -205,11 +205,11 @@ function chartLayout() {
     margin: { t: 22, r: 50, b: 24, l: 50 },
     paper_bgcolor: "#ffffff",
     plot_bgcolor: "#ffffff",
-    font: { family: "DM Sans, Segoe UI, sans-serif", color: "#52625d", size: 11 },
+    font: { family: "system-ui, -apple-system, Segoe UI, sans-serif", color: "#6b7385", size: 11 },
     polar: {
       bgcolor: "#ffffff",
-      radialaxis: { range: [0, 90], tickvals: [0, 15, 30, 45, 60, 75, 90], ticktext: ["90°", "75°", "60°", "45°", "30°", "15°", "0°"], gridcolor: "#e4ebe7", linecolor: "#dce5e1", tickfont: { size: 9 } },
-      angularaxis: { direction: "clockwise", rotation: 90, tickvals: [0, 90, 180, 270], ticktext: ["N · 0°", "E · 90°", "S · 180°", "O · 270°"], gridcolor: "#e4ebe7", linecolor: "#dce5e1", tickfont: { size: 10 } }
+      radialaxis: { range: [0, 90], tickvals: [0, 15, 30, 45, 60, 75, 90], ticktext: ["90°", "75°", "60°", "45°", "30°", "15°", "0°"], gridcolor: "#e6e9f0", linecolor: "#dfe3eb", tickfont: { size: 9 } },
+      angularaxis: { direction: "clockwise", rotation: 90, tickvals: [0, 90, 180, 270], ticktext: ["N · 0°", "E · 90°", "S · 180°", "O · 270°"], gridcolor: "#e6e9f0", linecolor: "#dfe3eb", tickfont: { size: 10 } }
     },
     showlegend: false
   };

@@ -2,7 +2,7 @@ const THREE = window.THREE;
 const OrbitControls = THREE.OrbitControls;
 const container = document.getElementById("shade-axonometric");
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#f7faf8");
+scene.background = new THREE.Color("#f6f7fa");
 
 const camera = new THREE.OrthographicCamera(-4.2, 4.2, 3.3, -3.3, 0.1, 80);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "low-power" });
@@ -10,7 +10,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.setClearColor("#f7faf8");
+renderer.setClearColor("#f6f7fa");
 renderer.domElement.setAttribute("aria-hidden", "true");
 container.replaceChildren(renderer.domElement);
 
@@ -25,7 +25,7 @@ controls.target.set(0, 0, 0);
 
 const model = new THREE.Group();
 scene.add(model);
-scene.add(new THREE.HemisphereLight(0xffffff, 0x82958c, 0.42));
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a90a0, 0.42));
 
 const keyLight = new THREE.DirectionalLight(0xffffff, 0.72);
 keyLight.position.set(-5, 8, 7);
@@ -38,14 +38,14 @@ fillLight.position.set(5, 3, -4);
 scene.add(fillLight);
 
 const materials = {
-  wall: new THREE.MeshStandardMaterial({ color: 0xb9c9c2, roughness: 0.88 }),
-  reveal: new THREE.MeshStandardMaterial({ color: 0xcbd7d2, roughness: 0.9 }),
-  trim: new THREE.MeshStandardMaterial({ color: 0x547b78, roughness: 0.62 }),
-  glass: new THREE.MeshPhysicalMaterial({ color: 0x73aaa5, roughness: 0.24, metalness: 0.02, transmission: 0.12 }),
+  wall: new THREE.MeshStandardMaterial({ color: 0xc4c9d4, roughness: 0.88 }),
+  reveal: new THREE.MeshStandardMaterial({ color: 0xd6dae3, roughness: 0.9 }),
+  trim: new THREE.MeshStandardMaterial({ color: 0x55607a, roughness: 0.62 }),
+  glass: new THREE.MeshPhysicalMaterial({ color: 0x8fb0d8, roughness: 0.24, metalness: 0.02, transmission: 0.12 }),
   mullion: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 }),
-  horizontal: new THREE.MeshStandardMaterial({ color: 0xcfed70, roughness: 0.58 }),
-  vertical: new THREE.MeshStandardMaterial({ color: 0x94b63a, roughness: 0.58 }),
-  ground: new THREE.MeshStandardMaterial({ color: 0xd0dbd5, roughness: 0.95 })
+  horizontal: new THREE.MeshStandardMaterial({ color: 0xffd400, roughness: 0.58 }),
+  vertical: new THREE.MeshStandardMaterial({ color: 0xef9c15, roughness: 0.58 }),
+  ground: new THREE.MeshStandardMaterial({ color: 0xdfe3eb, roughness: 0.95 })
 };
 
 const addBox = (width, height, depth, x, y, z, material, castsShadow = true) => {
