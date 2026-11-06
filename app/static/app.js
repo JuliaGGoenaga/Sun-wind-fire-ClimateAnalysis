@@ -111,8 +111,10 @@ async function withBusy(title, text, fn) {
   finally { idle(); }
 }
 
+const transport = (path, opts) => fetch(path, opts);
+
 async function api(path, body, raw = false) {
-  const r = await fetch(path, body === undefined ? {} : {
+  const r = await transport(path, body === undefined ? {} : {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
   });
   if (raw) return r;
