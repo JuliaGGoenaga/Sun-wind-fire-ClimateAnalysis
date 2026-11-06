@@ -156,6 +156,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .sheet-row input[type=text] { height: 28px; font-size: 12px; }
 .sheet-row:has(input[type=checkbox]:not(:checked)) input[type=text] { opacity: .45; }
 details.fixed { display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+details.sheets-pick { border-top: 0; padding-top: 0; }
 details.fixed > summary { cursor: pointer; font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
 details.fixed > label { margin-bottom: 10px; }
 
