@@ -40,6 +40,20 @@
     <label>Ciudad <input id="city" placeholder="(del EPW)"></label>
     <label>Encabezado derecho <input id="header_right" placeholder="{city} - Climate analysis"></label>
     <label>Pie de página <input id="footer_text" placeholder="Proyecto · Fecha · Autor"></label>
+  </section>
+
+  <section>
+    <h2><span class="step"></span> Láminas</h2>
+    <details class="fixed sheets-pick">
+      <summary id="sheets-summary">Láminas incluidas</summary>
+      <p class="muted">Marca las láminas a incluir. El título se puede cambiar (vacío = por defecto).</p>
+      <div id="sheets" class="sheets"></div>
+    </details>
+  </section>
+
+  <section>
+    <h2><span class="step"></span> Configuración</h2>
+    <p class="muted">Umbrales de temperatura (ºC) de los análisis.</p>
     <div class="row">
       <label>Refrig. &gt; ºC <input id="cooling_threshold" type="number" step="0.5" value="26"></label>
       <label>Calef. &lt; ºC <input id="heating_threshold" type="number" step="0.5" value="19"></label>
@@ -50,15 +64,6 @@
       <label>Vent. natural ≤ ºC <input id="nv_max" type="number" step="0.5" value="24"></label>
     </div>
     <label class="check"><input type="checkbox" id="utci_sun_exposed" checked><span>UTCI al sol (si no, a la sombra)</span></label>
-  </section>
-
-  <section>
-    <h2><span class="step"></span> Láminas</h2>
-    <details class="fixed sheets-pick">
-      <summary id="sheets-summary">Láminas incluidas</summary>
-      <p class="muted">Marca las láminas a incluir. El título se puede cambiar (vacío = por defecto).</p>
-      <div id="sheets" class="sheets"></div>
-    </details>
     <details class="fixed" open>
       <summary>Protecciones solares (máscaras fijas)</summary>
       <p class="muted">Método SunExplore, ventana de referencia 1,5 × 1,5 m. Voladizo: ángulo desde la vertical en sección. Lamas: ángulo desde el plano de fachada en planta, lado visto desde fuera.</p>
