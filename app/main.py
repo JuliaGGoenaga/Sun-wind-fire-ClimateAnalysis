@@ -10,7 +10,7 @@ import os
 import re
 import sys
 
-from fastapi import Body, FastAPI, File, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Header, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
@@ -117,9 +117,9 @@ def parse(body: dict = Body(...)):
 
 
 @app.get("/api/llm/models")
-def models(backend: str = "ollama", url: str | None = None):
+def models(backend: str = "ollama", url: str | None = None, x_api_key: str | None = Header(default=None)):
     try:
-        return {"ok": True, "models": llm.list_models(backend, url)}
+        return {"ok": True, "models": llm.list_models(backend, url, x_api_key)}
     except llm.LLMUnavailable as e:
         return {"ok": False, "models": [], "error": str(e)}
 
@@ -144,10 +144,11 @@ def generate(rid: str, body: dict = Body(...)):
     texts = {}
     try:
         for k, p in prompts.items():  # one short call per text: much easier for small models
-            raw = llm.generate(body.get("backend", "ollama"), body["model"], p, body.get("url"), language=lang)
+            raw = llm.generate(body.get("backend", "ollama"), body.get("model"), p, body.get("url"), language=lang,
+                               api_key=body.get("api_key"))
             if detect_language(raw) != ("es" if lang == "es" else "en"):  # one stricter retry
-                raw = llm.generate(body.get("backend", "ollama"), body["model"], p + strict_suffix(lang),
-                                   body.get("url"), language=lang)
+                raw = llm.generate(body.get("backend", "ollama"), body.get("model"), p + strict_suffix(lang),
+                                   body.get("url"), language=lang, api_key=body.get("api_key"))
             texts[k] = fit_text(raw, **lim[k])
     except (llm.LLMUnavailable, KeyError) as e:
         return JSONResponse({"error": str(e), "prompt": build_prompt(facts, lang)}, status_code=503)
