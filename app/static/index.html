@@ -15,8 +15,15 @@
       <p>EPW → PDF · PPTX · SVG</p>
     </div>
   </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab is-active" role="tab" data-view="analysis" aria-selected="true">Análisis climático</button>
+    <button class="tab" role="tab" data-view="sunexplore" aria-selected="false">SunExplore · carta solar</button>
+  </nav>
 </header>
-<div class="app">
+<section id="view-sunexplore" class="view-frame" hidden>
+  <iframe id="sunexplore" title="SunExplore" src="/static/sunexplore/index.html?embed=1"></iframe>
+</section>
+<div class="app" id="view-analysis">
 <aside>
 
   <section>

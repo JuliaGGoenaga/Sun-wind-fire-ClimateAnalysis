@@ -10,8 +10,19 @@ LM Studio) o se escriben / pegan a mano; el resto de láminas lleva un texto bas
 Requiere Python 3.10 o superior.
 
 ```bash
-./run.sh            # crea .venv la primera vez, instala dependencias y abre http://localhost:8000
+./run.sh            # macOS / Linux: crea .venv la primera vez, instala dependencias y arranca http://localhost:8000
 ```
+
+En Windows, doble clic en `run.bat` (hace lo mismo y abre el navegador).
+
+La web tiene dos pestañas que comparten el mismo EPW:
+
+- **Análisis climático**: las láminas A3 y sus descargas (lo que se describe abajo).
+- **SunExplore · carta solar**: el visualizador interactivo [SunExplore](https://github.com/JuliaGGoenaga/SunExplore)
+  (carta solar con filtro de temperatura, protección horizontal / vertical y vista 3D de la ventana).
+  Al subir un EPW en el análisis se carga también aquí, con el mismo umbral de temperatura; también se
+  puede subir otro EPW directamente en esta pestaña. Su código está en `app/static/sunexplore/`
+  (ver `SOURCE.md`); usa Plotly y three.js desde CDN, así que necesita conexión a Internet.
 
 1. Sube el `.epw`.
 2. Ajusta idioma, tipografía, encabezado, pie de página, umbrales y las láminas a incluir.
@@ -65,7 +76,7 @@ report/primitives.py     primitivas de dibujo en mm (una sola geometría para to
 report/writers/          svg.py · pdf.py (reportlab) · pptx.py (python-pptx)
 report/text/             prompts.py (datos en frases + guion + ejemplo) · llm.py (Ollama / LM Studio)
 report/fonts.py          fuentes TTF del sistema o de fonts/ + medición para cortar líneas igual siempre
-app/                     FastAPI + HTML/JS sin dependencias de build
+app/                     FastAPI + HTML/JS sin dependencias de build (app/static/sunexplore = pestaña SunExplore)
 cli.py                   generación por línea de comandos
 tests/                   test de determinismo y tamaño A3
 ```

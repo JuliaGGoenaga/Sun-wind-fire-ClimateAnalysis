@@ -15,6 +15,18 @@ body {
   flex: 0 0 auto; display: flex; align-items: center; gap: 16px; padding: 12px 24px;
   background: var(--panel); border-bottom: 1px solid var(--line); box-shadow: 0 1px 2px rgba(20, 30, 60, .05);
 }
+.tabs { display: flex; gap: 4px; margin-left: 24px; align-self: stretch; align-items: stretch; }
+.tab {
+  height: auto; padding: 0 14px; border: 0; border-radius: 0; background: transparent; color: var(--muted);
+  font: 600 13px system-ui, -apple-system, "Segoe UI", sans-serif; border-bottom: 2px solid transparent;
+  margin-bottom: -13px; padding-bottom: 11px; padding-top: 11px; margin-top: -12px;
+}
+.tab:hover { background: transparent; color: var(--ink); }
+.tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+.view-frame { flex: 1 1 auto; min-height: 0; }
+.view-frame[hidden] { display: none; }
+.view-frame iframe { width: 100%; height: 100%; border: 0; display: block; background: #f4f7f5; }
+.app[hidden] { display: none; }
 .app {
   flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 360px 1fr; gap: 20px; padding: 20px;
 }
@@ -188,5 +200,17 @@ main {
 
 @media (max-width: 900px) {
   body { height: auto; }
-  .app { grid-template-columns: 1fr; padding: 12px; }
+  .tabs { display: flex; gap: 4px; margin-left: 24px; align-self: stretch; align-items: stretch; }
+.tab {
+  height: auto; padding: 0 14px; border: 0; border-radius: 0; background: transparent; color: var(--muted);
+  font: 600 13px system-ui, -apple-system, "Segoe UI", sans-serif; border-bottom: 2px solid transparent;
+  margin-bottom: -13px; padding-bottom: 11px; padding-top: 11px; margin-top: -12px;
+}
+.tab:hover { background: transparent; color: var(--ink); }
+.tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+.view-frame { flex: 1 1 auto; min-height: 0; }
+.view-frame[hidden] { display: none; }
+.view-frame iframe { width: 100%; height: 100%; border: 0; display: block; background: #f4f7f5; }
+.app[hidden] { display: none; }
+.app { grid-template-columns: 1fr; padding: 12px; }
 }

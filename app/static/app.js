@@ -159,6 +159,7 @@ $("epw").addEventListener("change", async (e) => {
     const j = await r.json();
     if (!r.ok) throw new Error(j.detail || "Error al leer el EPW");
     RID = j.id;
+    sendEpwToSunExplore(f.name);
     $("loc").textContent = `${j.city}, ${j.country} · ${j.latitude.toFixed(2)}°, ${j.longitude.toFixed(2)}° · ${Math.round(j.elevation)} m`;
     $("city").placeholder = j.city;
     $("busy-title").textContent = "Dibujando láminas";
@@ -247,4 +248,29 @@ document.querySelectorAll(".dl").forEach((btn) => btn.addEventListener("click", 
 
 api("/api/limits").then((j) => { LIMITS = j; TEXT_IDS.forEach(countWords); });
 for (const id of ["language", "nv_min", "nv_max", "sun_threshold"]) $(id).addEventListener("change", refreshDefaults);
+// ---------- tabs: climate analysis / SunExplore (same EPW in both)
+let sunexploreName = null;
+function sunexploreMsg(name) {
+  return { type: "load-epw", url: `/api/${RID}/epw`, name: name || "climate.epw", minT: $("sun_threshold").value };
+}
+function sendEpwToSunExplore(name) {
+  sunexploreName = name;
+  const frame = $("sunexplore");
+  frame.contentWindow?.postMessage(sunexploreMsg(name), window.location.origin);
+}
+$("sunexplore").addEventListener("load", () => {  // the tab may load after the upload
+  if (RID) $("sunexplore").contentWindow.postMessage(sunexploreMsg(sunexploreName), window.location.origin);
+});
+document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => {
+  const view = tab.dataset.view;
+  document.querySelectorAll(".tab").forEach((t) => {
+    t.classList.toggle("is-active", t === tab);
+    t.setAttribute("aria-selected", t === tab ? "true" : "false");
+  });
+  $("view-analysis").hidden = view !== "analysis";
+  $("view-sunexplore").hidden = view !== "sunexplore";
+  // Plotly / three.js measure their container: resize once the tab is visible
+  if (view === "sunexplore") $("sunexplore").contentWindow?.dispatchEvent(new Event("resize"));
+}));
+
 loadFonts().then(loadSheets).then(loadModels);

@@ -79,6 +79,12 @@ async def upload(file: UploadFile = File(...)):
             "longitude": loc.longitude, "elevation": loc.elevation, "defaults": DEFAULT_SETTINGS}
 
 
+@app.get("/api/{rid}/epw")
+def epw_file(rid: str):
+    """The uploaded EPW, so the SunExplore tab can use the same file."""
+    return FileResponse(_epw(rid), media_type="text/plain", filename="climate.epw")
+
+
 @app.post("/api/{rid}/prompt")
 def prompt(rid: str, settings: dict = Body(default={})):
     path = _epw(rid)

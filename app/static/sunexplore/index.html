@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7f5">
+  <title>Carta solar | EPW</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=2">
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script defer src="axonometric.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="./" aria-label="Carta solar, inicio">
+      <span class="sun-mark" aria-hidden="true">◉</span>
+      <span>CARTA<span class="wordmark-light">SOLAR</span></span>
+    </a>
+    <span class="topbar-note">VISUALIZADOR CLIMÁTICO · EPW</span>
+  </header>
+
+  <main>
+    <section class="controls-strip" aria-label="Parámetros de la carta solar">
+      <div class="strip-section file-control">
+        <div class="control-heading">
+          <span class="step">01</span>
+          <h2>Archivo EPW</h2>
+        </div>
+        <label class="file-picker" for="epw-file">
+          <span class="upload-icon" aria-hidden="true">↑</span>
+          <span class="file-picker-copy"><strong id="file-name">Selecciona un archivo .epw</strong><small id="file-hint">o arrástralo aquí · el archivo no se sube</small></span>
+          <span class="browse-label">EXPLORAR</span>
+        </label>
+        <input id="epw-file" type="file" accept=".epw,text/plain" hidden>
+        <div id="location" class="location" aria-live="polite">
+          <span class="location-dot"></span>
+          <span id="location-name">Sin archivo cargado</span>
+        </div>
+        <p class="epw-source">Los archivos EPW pueden descargarse desde <a href="https://www.ladybug.tools/epwmap/" target="_blank" rel="noopener noreferrer">EPW Map</a>. Se recomienda seleccionar archivos TMYx, identificados con marcadores naranjas.</p>
+      </div>
+
+      <div class="strip-section parameter-control">
+        <div class="control-heading">
+          <span class="step">02</span>
+          <h2>Parámetros</h2>
+        </div>
+        <div class="parameter-fields">
+          <label class="compact-field" for="orientation">Orientación <span>AZIMUT</span>
+            <span class="input-unit"><input id="orientation" type="number" min="0" max="359" step="1" value="180" disabled><span>°</span></span>
+          </label>
+          <label class="compact-field" for="min-temperature">Temperatura mínima <span>FILTRO</span>
+            <span class="input-unit"><input id="min-temperature" type="number" min="-50" max="60" step="1" placeholder="Sin filtro" disabled><span>°C</span></span>
+          </label>
+        </div>
+        <p class="parameter-help">0° N · 90° E · 180° S · 270° O</p>
+      </div>
+
+      <div class="strip-section protection-control">
+        <div class="control-heading">
+          <span class="step">03</span>
+          <h2>Protección solar</h2>
+        </div>
+        <div class="protection-grid">
+          <div class="protection-group">
+            <label class="shade-toggle"><input id="horizontal-enabled" type="checkbox" disabled> Horizontal</label>
+            <label class="shade-field">Vuelo <span><output id="horizontal-length-value">0.0</output> m</span><input id="horizontal-length" class="shade-range" type="range" min="0" max="5" step="0.1" value="0" disabled></label>
+            <label class="shade-field">Altura ventana <span>m</span><input id="window-height" type="number" min="0.1" max="5" step="0.1" value="1.5" disabled></label>
+          </div>
+          <div class="protection-group">
+            <label class="shade-toggle"><input id="vertical-enabled" type="checkbox" disabled> Vertical</label>
+            <label class="shade-field">Lama <span><output id="vertical-length-value">0.0</output> m</span><input id="vertical-length" class="shade-range" type="range" min="0" max="5" step="0.1" value="0" disabled></label>
+            <label class="shade-field">Ancho ventana <span>m</span><input id="window-width" type="number" min="0.1" max="5" step="0.1" value="1.5" disabled></label>
+            <label class="shade-field">Lado <select id="vertical-side" disabled><option value="right">Derecha</option><option value="left">Izquierda</option></select></label>
+          </div>
+        </div>
+      </div>
+      <div class="strip-actions">
+        <p id="status" class="status" role="status" aria-live="polite">Carga un EPW para generar la carta.</p>
+        <div class="button-row">
+          <button id="download-csv" class="button button-secondary" type="button" disabled title="Descargar datos visibles en CSV">
+            <span aria-hidden="true">↓</span> CSV
+          </button>
+          <button id="download-png" class="button button-primary" type="button" disabled title="Descargar carta solar como imagen">
+            <span aria-hidden="true">↗</span> PNG
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="visual-workspace" aria-label="Modelo y carta solar">
+      <aside class="axonometric-panel" aria-labelledby="axon-title">
+        <div class="chart-heading">
+          <div>
+            <p class="eyebrow">PROTECCIÓN SOLAR</p>
+            <h2 id="axon-title">Vista isométrica</h2>
+          </div>
+          <div class="model-actions">
+            <output id="preview-dimensions">1.5 × 1.5 m</output>
+            <button id="reset-axon-view" class="icon-button" type="button" aria-label="Restablecer vista 3D" title="Restablecer vista">↻</button>
+          </div>
+        </div>
+        <div id="shade-axonometric" class="shade-canvas" role="application" aria-label="Modelo 3D interactivo de una ventana y sus protecciones"></div>
+      </aside>
+
+      <section class="chart-panel" aria-labelledby="chart-title">
+        <div class="chart-heading">
+          <div>
+            <p class="eyebrow">HEMISFERIO CELESTE</p>
+            <h2 id="chart-title">Carta solar anual</h2>
+          </div>
+          <div class="chart-legend"><span class="legend-dot"></span><span>Temperatura seca</span></div>
+        </div>
+        <div id="solar-chart" role="img" aria-label="Gráfica polar de la trayectoria solar" ></div>
+        <div class="chart-footer">
+          <span id="record-count">0 horas de sol</span>
+          <span>ALTURA SOLAR <span class="mono">0° — 90°</span></span>
+        </div>
+      </section>
+    </section>
+
+    <footer class="page-footer">
+      <span>Los datos del archivo se procesan localmente y no salen de tu dispositivo.</span>
+      <a href="https://energyplus.net/weather" target="_blank" rel="noopener noreferrer">Archivos climáticos EPW ↗</a>
+    </footer>
+  </main>
+</body>
+</html>
