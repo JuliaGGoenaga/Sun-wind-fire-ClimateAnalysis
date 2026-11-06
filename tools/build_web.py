@@ -2,7 +2,7 @@
 
     python tools/build_web.py
 
-docs/ = the same UI as app/static (index.html, app.js, style.css, SunExplore tab)
+docs/ = the same UI as app/static (index.html, app.js, style.css, SunExplore and 3D tabs)
       + web/backend.js and web/worker.js (Python runs in the browser with Pyodide)
       + py.zip with report/ (code + font metrics) and layout/a3_climate.json.
 Publish: GitHub -> Settings -> Pages -> Deploy from a branch -> <branch> /docs.
@@ -54,7 +54,8 @@ def main():
     os.makedirs(DOCS)
     for name in ("app.js", "style.css"):
         shutil.copy2(os.path.join(STATIC, name), DOCS)
-    shutil.copytree(os.path.join(STATIC, "sunexplore"), os.path.join(DOCS, "sunexplore"))
+    for tab in ("sunexplore", "radiation3d"):  # embedded tabs, copied as they are
+        shutil.copytree(os.path.join(STATIC, tab), os.path.join(DOCS, tab))
     for name in ("backend.js", "worker.js"):
         shutil.copy2(os.path.join(ROOT, "web", name), DOCS)
     with open(os.path.join(DOCS, "index.html"), "w", encoding="utf-8") as f:

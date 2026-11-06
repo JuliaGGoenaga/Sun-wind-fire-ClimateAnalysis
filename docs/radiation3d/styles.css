@@ -1,0 +1,74 @@
+/* "Sombras y radiación 3D" tab. Base look comes from ../style.css (same as the other tabs). */
+body.is-embedded .r3-standalone { display: none; }
+body.r3 { background: var(--bg); }
+
+.file-text { display: flex; flex-direction: column; min-width: 0; }
+.file-hint { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
+label.file.is-dragging { border-color: var(--accent-2); background: var(--accent-soft); }
+button.wide, .row > button.ghost.wide { width: 100%; padding: 0 10px; white-space: nowrap; }
+input.range { height: 20px; padding: 0; border: 0; background: transparent; accent-color: var(--accent); box-shadow: none; }
+input.range:focus { box-shadow: none; }
+label .lbl output { font-variant-numeric: tabular-nums; color: var(--ink); }
+#status.is-error { color: #b3261e; font-weight: 600; }
+
+.tag { font-weight: 600; padding: 0 5px; border-radius: 4px; }
+.tag.ctx { background: #e6e8ee; color: #4a5263; }
+.tag.ana { background: #fde6cf; color: #a24d00; }
+
+/* segmented control */
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; padding: 2px;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+.seg button { height: 26px; padding: 0 10px; background: transparent; color: var(--muted); border-radius: 6px;
+  font-size: 12px; font-weight: 600; }
+.seg button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
+.seg button.is-on { background: var(--accent); color: #fff; }
+.seg.small button { height: 24px; font-size: 11.5px; }
+
+/* layers / objects */
+.layers { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+.layer { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+.layer-head { display: grid; grid-template-columns: 10px 1fr 110px; gap: 8px; align-items: center; }
+.layer-head .swatch { width: 10px; height: 10px; border-radius: 3px; }
+.layer-head .name { font-size: 12px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.layer select, .obj select { height: 26px; font-size: 11.5px; padding: 0 22px 0 8px; background-position: right 7px center; }
+.layer details { margin-top: 4px; }
+.layer summary { font-size: 11px; color: var(--accent); cursor: pointer; }
+.obj { display: grid; grid-template-columns: 1fr 110px; gap: 8px; align-items: center; margin-top: 4px; font-size: 11.5px; }
+.obj span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+
+/* main */
+.r3-main { --field-h: 32px; overflow-y: auto; padding: 4px; display: flex; flex-direction: column; gap: 20px;
+  align-items: stretch; }
+.r3-card { flex: 0 0 auto; }
+.se-card { background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px;
+  display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.se-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.se-card-head h3 { margin: 2px 0 0; font-size: 16px; color: var(--ink); }
+.se-eyebrow { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+.se-foot { margin: 0; }
+.r3-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.r3-viewer { position: relative; width: 100%; height: min(74vh, 760px); min-height: 420px; border-radius: 10px;
+  overflow: hidden; background: #f4f6f9; border: 1px solid var(--line); }
+.r3-viewer canvas { display: block; width: 100% !important; height: 100% !important; }
+.r3-viewer.is-dragging { outline: 2px dashed var(--accent-2); outline-offset: -6px; }
+.r3-empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); pointer-events: none; }
+.r3-compass { position: absolute; right: 14px; top: 14px; width: 44px; height: 44px; pointer-events: none; }
+.r3-compass circle { fill: rgba(255, 255, 255, .92); stroke: var(--line); }
+.r3-compass path { fill: var(--accent); }
+.r3-compass text { font: 700 9px system-ui, sans-serif; fill: var(--accent); text-anchor: middle; }
+
+.r3-legend { position: absolute; left: 14px; bottom: 14px; background: rgba(255, 255, 255, .94); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 10px; font-size: 11px; color: var(--ink); min-width: 220px; }
+.r3-legend .t { font-weight: 600; margin-bottom: 6px; }
+.r3-legend .bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; height: 12px; border-radius: 3px; overflow: hidden; }
+.r3-legend .ticks { display: flex; justify-content: space-between; margin-top: 3px; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.r3-table-wrap { overflow-x: auto; }
+.r3-table { width: 100%; border-collapse: collapse; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.r3-table th, .r3-table td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.r3-table th:first-child, .r3-table td:first-child { text-align: left; }
+.r3-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+
+.modal .bar { margin-top: 12px; height: 6px; border-radius: 3px; background: var(--card); overflow: hidden; }
+.modal .bar > div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }

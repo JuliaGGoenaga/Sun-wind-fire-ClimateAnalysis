@@ -15,16 +15,20 @@
       <p>EPW → PDF · PPTX · SVG</p>
     </div>
   </div>
-  <button id="epw-open" class="epw-chip" type="button" title="Cargar o cambiar el archivo EPW (sirve para las dos pestañas)">
+  <button id="epw-open" class="epw-chip" type="button" title="Cargar o cambiar el archivo EPW (sirve para todas las pestañas)">
     <span class="epw-dot"></span><span id="epw-chip-text">Cargar EPW</span>
   </button>
   <nav class="tabs" role="tablist">
     <button class="tab is-active" role="tab" data-view="analysis" aria-selected="true">Análisis climático</button>
     <button class="tab" role="tab" data-view="sunexplore" aria-selected="false">SunExplore · carta solar</button>
+    <button class="tab" role="tab" data-view="radiation3d" aria-selected="false">Sombras y radiación 3D</button>
   </nav>
 </header>
 <section id="view-sunexplore" class="view-frame" hidden>
   <iframe id="sunexplore" title="SunExplore" src="./sunexplore/index.html?embed=1"></iframe>
+</section>
+<section id="view-radiation3d" class="view-frame" hidden>
+  <iframe id="radiation3d" title="Sombras y radiación 3D" src="./radiation3d/index.html?embed=1"></iframe>
 </section>
 <div class="app" id="view-analysis">
 <aside>
@@ -123,7 +127,7 @@
   <div class="modal epw-modal">
     <button id="epw-close" class="modal-x" type="button" aria-label="Cerrar">×</button>
     <h3 id="epw-modal-title">Archivo climático EPW</h3>
-    <p class="muted">Se usa en las dos pestañas: análisis climático y SunExplore.</p>
+    <p class="muted">Se usa en todas las pestañas: análisis climático, SunExplore y sombras y radiación 3D.</p>
     <label class="file epw-drop" id="epw-drop">
       <input autocomplete="off" type="file" id="epw" accept=".epw">
       <span class="file-btn">Elegir EPW</span>
