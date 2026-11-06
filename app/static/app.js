@@ -31,7 +31,7 @@ async function loadSheets() {
   SHEETS = j.sheets.map((x) => x.key);
   $("sheets").innerHTML = j.sheets.map((x) => `
     <label class="sheet-row check"><input type="checkbox" id="sheet_${x.key}" checked>
-      <input type="text" id="title_${x.key}" placeholder="${x.title}"></label>`).join("");
+      <input type="text" id="title_${x.key}" placeholder="${x.title}" autocomplete="off" data-lpignore="true" data-1p-ignore></label>`).join("");
   for (const k of SHEETS) {
     $(`sheet_${k}`).addEventListener("change", () => { updateSheetsSummary(); if (RID) render(); });
   }
@@ -44,7 +44,7 @@ async function loadSheets() {
       <div class="dev-top"><span class="dev-name">${d.name}</span>
         <select class="d-type">${opts(TYPES, d.type || "both")}</select></div>
       <div class="dev-params">
-        <label>Orient. º<input class="d-az" type="number" step="5" min="0" max="355" value="${d.facade_az}"></label>
+        <label>Orient. º<input class="d-az" autocomplete="off" type="number" step="5" min="0" max="355" value="${d.facade_az}"></label>
         <label class="l-ov">Voladizo º<input class="d-ov" type="number" step="5" min="0" max="85" value="${d.overhang_deg}"></label>
         <label class="l-fin">Lamas º<input class="d-fin" type="number" step="5" min="0" max="85" value="${d.fin_deg}"></label>
         <label class="l-fin">Lado<select class="d-side">${opts(SIDES, d.fin_side)}</select></label>
