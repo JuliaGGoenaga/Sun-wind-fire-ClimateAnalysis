@@ -67,14 +67,17 @@
     <h2><span class="step"></span> Textos</h2>
     <div class="row">
       <label>Motor
-        <select id="backend"><option value="ollama">Ollama</option><option value="lmstudio">LM Studio</option></select>
+        <select id="backend"><option value="ollama">Ollama</option><option value="lmstudio">LM Studio</option><option value="openai">Compatible OpenAI (Bionic…)</option></select>
       </label>
       <label>URL <input id="llm_url" placeholder="por defecto"></label>
     </div>
     <div class="row">
-      <label>Modelo <select id="model"></select></label>
+      <label>Modelo <input id="model" list="model-list" placeholder="elige o escribe el nombre" autocomplete="off"></label>
       <button id="refresh" class="ghost" title="Buscar modelos">↻</button>
+      <datalist id="model-list"></datalist>
     </div>
+    <label id="llm_key_row" hidden>Clave de API (si el servicio la pide)
+      <input id="llm_key" type="password" placeholder="sk-… / clave de Bionic" autocomplete="off"></label>
     <span id="llmstatus" class="pill"></span>
     <div class="row">
       <button id="gen">Generar con LLM</button>

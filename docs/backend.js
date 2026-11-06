@@ -12,7 +12,14 @@
     pptx: "https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js",
     jszip: "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
   };
-  const LLM_URLS = { ollama: "http://localhost:11434", lmstudio: "http://localhost:1234" };
+  const LLM_URLS = { ollama: "http://localhost:11434", lmstudio: "http://localhost:1234", openai: "" };
+  const v1 = (base) => (base.endsWith("/v1") ? base : base + "/v1");   // OpenAI-style base URL
+  const auth = (key) => (key ? { Authorization: `Bearer ${key}` } : {});
+  const baseUrl = (backend, url) => {
+    const b = (url || LLM_URLS[backend] || "").trim().replace(/\/$/, "");
+    if (!b) throw new Error("Falta la URL del servicio (por ejemplo https://servidor/v1)");
+    return b;
+  };
   const MM = 1 / 25.4;  // mm -> inch
 
   // ---------------------------------------------------------------- worker RPC
@@ -63,25 +70,27 @@
   const stem = (city) => (city || "climate").replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "climate";
 
   // ------------------------------------------------------------------- LLM
-  async function llmModels(backend, url) {
-    const base = (url || LLM_URLS[backend]).replace(/\/$/, "");
+  async function llmModels(backend, url, key) {
+    let base = "";
     try {
+      base = baseUrl(backend, url);
       if (backend === "ollama") {
         const r = await fetch(`${base}/api/tags`);
         if (!r.ok) throw new Error(r.statusText);
         return { ok: true, models: (await r.json()).models.map((m) => m.name).sort() };
       }
-      const r = await fetch(`${base}/v1/models`);
-      if (!r.ok) throw new Error(r.statusText);
+      const r = await fetch(`${v1(base)}/models`, { headers: auth(key) });
+      if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
       return { ok: true, models: (await r.json()).data.map((m) => m.id).sort() };
     } catch (err) {
-      return { ok: false, models: [], error: `${backend} no accesible en ${base}: ${err.message}. ` +
-        "Si está abierto, permite esta web (Ollama: OLLAMA_ORIGINS; LM Studio: activar CORS)." };
+      return { ok: false, models: [], error: `${backend} no accesible en ${base || "?"}: ${err.message}. ` +
+        "Si está abierto, permite esta web (Ollama: OLLAMA_ORIGINS; LM Studio: activar CORS; otros: CORS del servidor)." };
     }
   }
 
-  async function llmGenerate(backend, url, model, system, prompt) {
-    const base = (url || LLM_URLS[backend]).replace(/\/$/, "");
+  async function llmGenerate(backend, url, model, system, prompt, key) {
+    const base = baseUrl(backend, url);
+    if (!model) throw new Error("Falta el nombre del modelo");
     const messages = [{ role: "system", content: system }, { role: "user", content: prompt }];
     let r;
     if (backend === "ollama") {
@@ -93,8 +102,8 @@
       if (!r.ok) throw new Error(`${backend}: ${r.status} ${r.statusText}`);
       return (await r.json()).message.content.trim();
     }
-    r = await fetch(`${base}/v1/chat/completions`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
+    r = await fetch(`${v1(base)}/chat/completions`, {   // LM Studio and any OpenAI-compatible API
+      method: "POST", headers: { "Content-Type": "application/json", ...auth(key) },
       body: JSON.stringify({ model, messages, temperature: 0, seed: 42, stream: false }),
     });
     if (!r.ok) throw new Error(`${backend}: ${r.status} ${r.statusText}`);
@@ -106,9 +115,10 @@
     const texts = {};
     try {
       for (const [key, prompt] of Object.entries(spec.prompts)) {
-        let raw = await llmGenerate(body.backend || "ollama", body.url, body.model, spec.system, prompt);
+        let raw = await llmGenerate(body.backend || "ollama", body.url, body.model, spec.system, prompt, body.api_key);
         if (!JSON.parse(await call("check_language", raw, spec.language))) {  // one stricter retry
-          raw = await llmGenerate(body.backend || "ollama", body.url, body.model, spec.system, prompt + spec.strict_suffix);
+          raw = await llmGenerate(body.backend || "ollama", body.url, body.model, spec.system, prompt + spec.strict_suffix,
+                                  body.api_key);
         }
         texts[key] = JSON.parse(await call("fit", key, raw));
       }
@@ -218,7 +228,8 @@
       if (p === "/api/sheets") return json(JSON.parse(await call("sheets", JSON.stringify(body || {}))));
       if (p === "/api/parse") return json(JSON.parse(await call("parse", body.raw || "")));
       if (p === "/api/llm/models") {
-        return json(await llmModels(url.searchParams.get("backend") || "ollama", url.searchParams.get("url")));
+        const key = (opts.headers && (opts.headers["X-Api-Key"] || opts.headers["x-api-key"])) || null;
+        return json(await llmModels(url.searchParams.get("backend") || "ollama", url.searchParams.get("url"), key));
       }
       if (p === "/api/upload") {
         const file = body.get("file");
