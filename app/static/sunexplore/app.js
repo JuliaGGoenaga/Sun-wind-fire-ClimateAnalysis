@@ -156,11 +156,15 @@ function makeChartTraces(climate, records, orientation, shadeOptions = {}) {
 
   if (shadeOptions.horizontalEnabled) {
     const overhang = Math.max(Number(shadeOptions.horizontalLength) || 0, 0);
-    const polygon = horizontalShadePolygon(orientation, overhang, REFERENCE_WINDOW_DIMENSION);
+    // the cut-off angle depends on the real window height: atan(height * cos(daz) / overhang)
+    const windowHeight = Math.max(Number(shadeOptions.windowHeight) || REFERENCE_WINDOW_DIMENSION, 0.1);
+    const polygon = horizontalShadePolygon(orientation, overhang, windowHeight);
     if (polygon) shadeTraces.push(makeShadeTrace(polygon));
   }
   if (shadeOptions.verticalEnabled) {
-    const angle = Math.atan(Math.max(Number(shadeOptions.verticalLength) || 0, 0) / REFERENCE_WINDOW_DIMENSION) * 180 / Math.PI;
+    // the fin angle depends on the real window width: atan(fin depth / width)
+    const windowWidth = Math.max(Number(shadeOptions.windowWidth) || REFERENCE_WINDOW_DIMENSION, 0.1);
+    const angle = Math.atan(Math.max(Number(shadeOptions.verticalLength) || 0, 0) / windowWidth) * 180 / Math.PI;
     // side as seen from outside; "both" = one fin on each side of the window
     const sides = shadeOptions.verticalSide === "both" ? ["left", "right"] : [shadeOptions.verticalSide];
     for (const side of sides) {
@@ -275,7 +279,9 @@ function initApp() {
       horizontalLength: document.getElementById("horizontal-length").value,
       verticalEnabled: document.getElementById("vertical-enabled").checked,
       verticalLength: document.getElementById("vertical-length").value,
-      verticalSide: document.getElementById("vertical-side").value
+      verticalSide: document.getElementById("vertical-side").value,
+      windowHeight: document.getElementById("window-height").value,
+      windowWidth: document.getElementById("window-width").value
     };
     Plotly.react("solar-chart", makeChartTraces(climate, records, orientation, shadeOptions), chartLayout(), { responsive: true, displaylogo: false, modeBarButtonsToRemove: ["lasso2d", "select2d"] });
     document.getElementById("record-count").textContent = `${records.length.toLocaleString("es-ES")} ${records.length === 1 ? "hora de sol" : "horas de sol"}`;

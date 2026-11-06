@@ -148,10 +148,29 @@ async function render() {
   await withBusy("Dibujando láminas", "Componiendo los gráficos A3…", doRender);
 }
 
-$("epw").addEventListener("change", async (e) => {
-  const f = e.target.files[0];
-  if (!f) return;
+// ---------- EPW: one file for both tabs, loaded from the top-bar button (modal)
+const epwModal = {
+  open() { $("epw-modal").classList.add("show"); },
+  close() { $("epw-modal").classList.remove("show"); },
+};
+$("epw-open").addEventListener("click", () => epwModal.open());
+$("epw-close").addEventListener("click", () => epwModal.close());
+$("epw-modal").addEventListener("click", (e) => { if (e.target === $("epw-modal")) epwModal.close(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") epwModal.close(); });
+const drop = $("epw-drop");
+drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("is-dragging"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("is-dragging"));
+drop.addEventListener("drop", (e) => {
+  e.preventDefault();
+  drop.classList.remove("is-dragging");
+  if (e.dataTransfer.files[0]) loadEpw(e.dataTransfer.files[0]);
+});
+$("epw").addEventListener("change", (e) => { if (e.target.files[0]) loadEpw(e.target.files[0]); });
+
+async function loadEpw(f) {
+  if (!f.name.toLowerCase().endsWith(".epw")) return toast("Selecciona un archivo .epw", true);
   $("epw_name").textContent = f.name;
+  epwModal.close();
   await withBusy("Analizando el EPW", "Calculando confort UTCI y posiciones solares…", async () => {
     const fd = new FormData();
     fd.append("file", f);
@@ -161,12 +180,15 @@ $("epw").addEventListener("change", async (e) => {
     RID = j.id;
     sendEpwToSunExplore(f.name);
     $("loc").textContent = `${j.city}, ${j.country} · ${j.latitude.toFixed(2)}°, ${j.longitude.toFixed(2)}° · ${Math.round(j.elevation)} m`;
+    $("epw-chip-text").textContent = `EPW · ${j.city}, ${j.country}`;
+    $("epw-open").classList.add("is-loaded");
+    $("epw-open").title = `${f.name} · clic para cambiarlo`;
     $("city").placeholder = j.city;
     $("busy-title").textContent = "Dibujando láminas";
     $("busy-text").textContent = "Componiendo los gráficos A3…";
     await doRender();
   });
-});
+}
 
 $("gen").addEventListener("click", async () => {
   if (!RID) return toast("Primero sube un EPW", true);
@@ -273,4 +295,4 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
   if (view === "sunexplore") $("sunexplore").contentWindow?.dispatchEvent(new Event("resize"));
 }));
 
-loadFonts().then(loadSheets).then(loadModels);
+loadFonts().then(loadSheets).then(loadModels).then(() => { if (!RID) epwModal.open(); });

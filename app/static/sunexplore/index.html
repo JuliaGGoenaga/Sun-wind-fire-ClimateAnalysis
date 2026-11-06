@@ -26,8 +26,8 @@
 
 <div class="app">
   <aside aria-label="Parámetros de la carta solar">
-    <section>
-      <h2><span class="step">1</span> Archivo EPW</h2>
+    <section class="se-standalone">
+      <h2><span class="step"></span> Archivo EPW</h2>
       <label class="file file-picker" for="epw-file">
         <input id="epw-file" type="file" accept=".epw,text/plain">
         <span class="file-btn">Elegir EPW</span>
@@ -43,7 +43,7 @@
     </section>
 
     <section>
-      <h2><span class="step">2</span> Parámetros</h2>
+      <h2><span class="step"></span> Parámetros</h2>
       <div class="row">
         <label for="orientation">Orientación º
           <input id="orientation" type="number" min="0" max="359" step="1" value="180" disabled>
@@ -56,7 +56,7 @@
     </section>
 
     <section>
-      <h2><span class="step">3</span> Protección horizontal</h2>
+      <h2><span class="step"></span> Protección horizontal</h2>
       <label class="check"><input id="horizontal-enabled" type="checkbox" disabled><span>Voladizo</span></label>
       <label for="horizontal-length"><span class="lbl">Vuelo <span><output id="horizontal-length-value">0.0</output> m</span></span>
         <input id="horizontal-length" class="range" type="range" min="0" max="5" step="0.1" value="0" disabled>
@@ -67,7 +67,7 @@
     </section>
 
     <section>
-      <h2><span class="step">4</span> Protección vertical</h2>
+      <h2><span class="step"></span> Protección vertical</h2>
       <label class="check"><input id="vertical-enabled" type="checkbox" disabled><span>Lama vertical</span></label>
       <label for="vertical-length"><span class="lbl">Lama <span><output id="vertical-length-value">0.0</output> m</span></span>
         <input id="vertical-length" class="range" type="range" min="0" max="5" step="0.1" value="0" disabled>
@@ -83,7 +83,7 @@
     </section>
 
     <section class="actions">
-      <h2><span class="step">5</span> Exportar</h2>
+      <h2><span class="step"></span> Exportar</h2>
       <p id="status" class="muted" role="status" aria-live="polite">Carga un EPW para generar la carta.</p>
       <div class="row">
         <button id="download-csv" type="button" disabled title="Descargar datos visibles en CSV">CSV</button>

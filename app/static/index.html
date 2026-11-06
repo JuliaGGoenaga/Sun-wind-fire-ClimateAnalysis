@@ -15,6 +15,9 @@
       <p>EPW → PDF · PPTX · SVG</p>
     </div>
   </div>
+  <button id="epw-open" class="epw-chip" type="button" title="Cargar o cambiar el archivo EPW (sirve para las dos pestañas)">
+    <span class="epw-dot"></span><span id="epw-chip-text">Cargar EPW</span>
+  </button>
   <nav class="tabs" role="tablist">
     <button class="tab is-active" role="tab" data-view="analysis" aria-selected="true">Análisis climático</button>
     <button class="tab" role="tab" data-view="sunexplore" aria-selected="false">SunExplore · carta solar</button>
@@ -27,17 +30,7 @@
 <aside>
 
   <section>
-    <h2><span class="step">1</span> Archivo EPW</h2>
-    <label class="file">
-      <input type="file" id="epw" accept=".epw">
-      <span class="file-btn">Elegir EPW</span>
-      <span class="file-name" id="epw_name">Ningún archivo</span>
-    </label>
-    <span id="loc" class="pill"></span>
-  </section>
-
-  <section>
-    <h2><span class="step">2</span> Formato</h2>
+    <h2><span class="step"></span> Formato</h2>
     <div class="row">
       <label>Idioma
         <select id="language"><option value="en">English</option><option value="es">Español</option></select>
@@ -60,7 +53,7 @@
   </section>
 
   <section>
-    <h2><span class="step">3</span> Láminas</h2>
+    <h2><span class="step"></span> Láminas</h2>
     <p class="muted">Marca las láminas a incluir. El título se puede cambiar (vacío = por defecto).</p>
     <div id="sheets" class="sheets"></div>
     <details class="fixed" open>
@@ -71,7 +64,7 @@
   </section>
 
   <section>
-    <h2><span class="step">4</span> Textos</h2>
+    <h2><span class="step"></span> Textos</h2>
     <div class="row">
       <label>Motor
         <select id="backend"><option value="ollama">Ollama</option><option value="lmstudio">LM Studio</option></select>
@@ -102,7 +95,7 @@
   </section>
 
   <section class="actions">
-    <h2><span class="step">5</span> Exportar</h2>
+    <h2><span class="step"></span> Exportar</h2>
     <button id="render">Actualizar vista previa</button>
     <div class="row">
       <button data-fmt="pdf" class="dl">PDF</button>
@@ -112,9 +105,25 @@
   </section>
 </aside>
 
-<main id="preview"><div class="empty">Sube un archivo EPW para empezar.</div></main>
+<main id="preview"><div class="empty">Carga un archivo EPW con el botón «Cargar EPW» de arriba para empezar.</div></main>
 </div>
 
+<div id="epw-modal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="epw-modal-title">
+  <div class="modal epw-modal">
+    <button id="epw-close" class="modal-x" type="button" aria-label="Cerrar">×</button>
+    <h3 id="epw-modal-title">Archivo climático EPW</h3>
+    <p class="muted">Se usa en las dos pestañas: análisis climático y SunExplore.</p>
+    <label class="file epw-drop" id="epw-drop">
+      <input type="file" id="epw" accept=".epw">
+      <span class="file-btn">Elegir EPW</span>
+      <span class="file-name" id="epw_name">o arrástralo aquí</span>
+    </label>
+    <span id="loc" class="pill"></span>
+    <p class="muted">Los EPW pueden descargarse desde
+      <a href="https://www.ladybug.tools/epwmap/" target="_blank" rel="noopener noreferrer">EPW Map</a>
+      (recomendado: archivos TMYx, marcadores naranjas).</p>
+  </div>
+</div>
 <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-live="polite">
   <div class="modal">
     <div class="sunloader"><div class="ring"></div><div class="orbit"><div class="sun"></div></div><div class="core">A3</div></div>
