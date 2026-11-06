@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sombras y radiación 3D</title>
+  <!-- same stylesheet as the climate analysis tab -->
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    } }
+  </script>
+  <script type="module" src="app.js"></script>
+</head>
+<body class="r3">
+<div class="app">
+  <aside aria-label="Parámetros del análisis 3D">
+    <section class="r3-standalone">
+      <h2><span class="step"></span> Archivo EPW</h2>
+      <label class="file" for="epw-file">
+        <input id="epw-file" type="file" accept=".epw">
+        <span class="file-btn">Elegir EPW</span>
+        <span class="file-name" id="epw-name">Ningún archivo</span>
+      </label>
+    </section>
+
+    <section>
+      <h2><span class="step"></span> Modelo Rhino</h2>
+      <label class="file" for="model-file" id="model-drop">
+        <input id="model-file" type="file" accept=".3dm">
+        <span class="file-btn">Elegir .3dm</span>
+        <span class="file-text">
+          <span class="file-name" id="model-name">Ningún archivo</span>
+          <small class="file-hint">o arrástralo aquí · se procesa en local</small>
+        </span>
+      </label>
+      <div class="row">
+        <label for="north">Norte (° antihorario desde +Y)
+          <input id="north" type="number" value="0" step="1" autocomplete="off">
+        </label>
+        <button id="sample" class="ghost wide" type="button" title="Cargar un modelo de ejemplo">Ejemplo</button>
+      </div>
+      <p class="muted" id="model-info">Mallas de render de Rhino. Si el archivo se guardó con «Guardar pequeño», las caras planas se reconstruyen.</p>
+    </section>
+
+    <section>
+      <h2><span class="step"></span> Volúmenes</h2>
+      <p class="muted">Haz clic en un volumen del visor para pasarlo de <b class="tag ctx">contexto</b> a <b class="tag ana">análisis</b>. El contexto solo arroja sombra.</p>
+      <div id="layers" class="layers"><p class="muted">Carga un .3dm para ver sus capas.</p></div>
+    </section>
+
+    <section>
+      <h2><span class="step"></span> Sombras</h2>
+      <label for="day">Día
+        <select id="day"></select>
+      </label>
+      <label for="hour"><span class="lbl">Hora (local estándar) <span><output id="hour-value">12:00</output></span></span>
+        <input id="hour" class="range" type="range" min="0" max="24" step="0.25" value="12">
+      </label>
+      <div class="row">
+        <button id="play" class="ghost wide" type="button">▶ Recorrido del día</button>
+        <button id="sunhours" type="button" disabled>Horas de sol</button>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="step"></span> Radiación acumulada</h2>
+      <div class="row">
+        <label for="grid">Malla (m)
+          <input id="grid" type="number" min="0.25" max="10" step="0.25" value="1" autocomplete="off">
+        </label>
+        <label for="albedo">Albedo suelo
+          <input id="albedo" type="number" min="0" max="1" step="0.05" value="0.2" autocomplete="off">
+        </label>
+      </div>
+      <button id="run" type="button" disabled>Calcular radiación</button>
+      <div class="seg" id="period" role="radiogroup" aria-label="Periodo">
+        <button type="button" data-p="annual" class="is-on">Anual</button>
+        <button type="button" data-p="summer">Verano</button>
+        <button type="button" data-p="winter">Invierno</button>
+      </div>
+      <div class="row">
+        <label for="lmin">Leyenda mín.
+          <input id="lmin" type="number" placeholder="auto" autocomplete="off">
+        </label>
+        <label for="lmax">Leyenda máx.
+          <input id="lmax" type="number" placeholder="auto" autocomplete="off">
+        </label>
+      </div>
+      <p class="muted" id="season-info">Cielo acumulado del EPW (577 zonas de cielo, difusa isótropa) con sombras del contexto y de los propios volúmenes.</p>
+    </section>
+
+    <section class="actions">
+      <h2><span class="step"></span> Exportar</h2>
+      <p id="status" class="muted" role="status" aria-live="polite">Carga un EPW y un .3dm.</p>
+      <div class="row">
+        <button id="png" type="button" disabled>PNG vista</button>
+        <button id="png4" type="button" disabled title="Sombras de los cuatro días clave a la hora elegida">PNG 4 días</button>
+        <button id="csv" type="button" disabled>CSV</button>
+      </div>
+    </section>
+  </aside>
+
+  <main class="r3-main">
+    <section class="se-card r3-card">
+      <div class="se-card-head">
+        <div>
+          <p class="se-eyebrow" id="eyebrow">Modelo 3D</p>
+          <h3 id="view-title">Sombras</h3>
+        </div>
+        <div class="r3-tools">
+          <span class="pill" id="sun-pill"></span>
+          <div class="seg small" id="mode" role="radiogroup" aria-label="Vista">
+            <button type="button" data-m="shadow" class="is-on">Sombras</button>
+            <button type="button" data-m="sunhours" disabled>Horas de sol</button>
+            <button type="button" data-m="radiation" disabled>Radiación</button>
+          </div>
+          <div class="seg small" id="cams">
+            <button type="button" data-c="axo" title="Vista axonométrica">Axo</button>
+            <button type="button" data-c="top" title="Planta">Planta</button>
+          </div>
+        </div>
+      </div>
+      <div id="viewer" class="r3-viewer">
+        <div id="legend" class="r3-legend" hidden></div>
+        <svg id="compass" class="r3-compass" viewBox="-20 -20 40 40" aria-label="Norte"><circle r="18"/>
+          <path d="M0 -13 L5 4 L0 1 L-5 4 Z"/><text y="14">N</text></svg>
+        <div id="empty" class="r3-empty">Arrastra aquí un archivo <b>.3dm</b></div>
+      </div>
+      <p class="muted se-foot">Arrastra para girar · rueda para zoom · botón derecho para desplazar · clic sobre un volumen para cambiar su papel.</p>
+    </section>
+
+    <section class="se-card" id="summary-card" hidden>
+      <div class="se-card-head">
+        <div>
+          <p class="se-eyebrow">Resultados por volumen</p>
+          <h3 id="summary-title">Radiación acumulada</h3>
+        </div>
+      </div>
+      <div class="r3-table-wrap"><table class="r3-table" id="summary"></table></div>
+    </section>
+  </main>
+</div>
+
+<div class="overlay" id="busy" aria-hidden="true">
+  <div class="modal" role="alertdialog" aria-live="polite">
+    <div class="sunloader"><div class="ring"></div><div class="orbit"><div class="sun"></div></div><div class="core"></div></div>
+    <h3 id="busy-title">Calculando</h3>
+    <p id="busy-text"></p>
+    <div class="bar"><div id="busy-bar"></div></div>
+  </div>
+</div>
+</body>
+</html>

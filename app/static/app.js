@@ -324,13 +324,13 @@ let sunexploreName = null;
 function sunexploreMsg(name) {
   return { type: "load-epw", url: `/api/${RID}/epw`, name: name || "climate.epw", minT: $("sun_threshold").value };
 }
+const EPW_FRAMES = ["sunexplore", "radiation3d"];  // embedded tabs that share the EPW
 function sendEpwToSunExplore(name) {
   sunexploreName = name;
-  const frame = $("sunexplore");
-  frame.contentWindow?.postMessage(sunexploreMsg(name), window.location.origin);
+  for (const id of EPW_FRAMES) $(id).contentWindow?.postMessage(sunexploreMsg(name), window.location.origin);
 }
-$("sunexplore").addEventListener("load", () => {  // the tab may load after the upload
-  if (RID) $("sunexplore").contentWindow.postMessage(sunexploreMsg(sunexploreName), window.location.origin);
+for (const id of EPW_FRAMES) $(id).addEventListener("load", () => {  // a tab may load after the upload
+  if (RID) $(id).contentWindow.postMessage(sunexploreMsg(sunexploreName), window.location.origin);
 });
 document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => {
   const view = tab.dataset.view;
@@ -339,9 +339,9 @@ document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click",
     t.setAttribute("aria-selected", t === tab ? "true" : "false");
   });
   $("view-analysis").hidden = view !== "analysis";
-  $("view-sunexplore").hidden = view !== "sunexplore";
+  for (const id of EPW_FRAMES) $(`view-${id}`).hidden = view !== id;
   // Plotly / three.js measure their container: resize once the tab is visible
-  if (view === "sunexplore") $("sunexplore").contentWindow?.dispatchEvent(new Event("resize"));
+  if (EPW_FRAMES.includes(view)) $(view).contentWindow?.dispatchEvent(new Event("resize"));
 }));
 
 loadFonts().then(loadSheets).then(loadModels).then(() => { if (!RID) epwModal.open(); });

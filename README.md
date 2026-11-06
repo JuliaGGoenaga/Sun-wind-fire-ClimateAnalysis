@@ -15,7 +15,7 @@ Requiere Python 3.10 o superior.
 
 En Windows, doble clic en `run.bat` (hace lo mismo y abre el navegador).
 
-La web tiene dos pestañas que comparten el mismo EPW:
+La web tiene tres pestañas que comparten el mismo EPW:
 
 - **Análisis climático**: las láminas A3 y sus descargas (lo que se describe abajo).
 - **SunExplore · carta solar**: el visualizador interactivo [SunExplore](https://github.com/JuliaGGoenaga/SunExplore)
@@ -23,6 +23,20 @@ La web tiene dos pestañas que comparten el mismo EPW:
   Al subir un EPW en el análisis se carga también aquí, con el mismo umbral de temperatura; también se
   puede subir otro EPW directamente en esta pestaña. Su código está en `app/static/sunexplore/`
   (ver `SOURCE.md`); usa Plotly y three.js desde CDN, así que necesita conexión a Internet.
+- **Sombras y radiación 3D**: sube un modelo de Rhino (`.3dm`) y marca qué volúmenes son **contexto**
+  (solo arrojan sombra) y cuáles se **analizan** (por capa en la columna izquierda o con un clic en el visor;
+  las capas llamadas «contexto / entorno / existente» se marcan como contexto y «proyecto / edificio» como análisis).
+  - *Sombras* de los días clave (21 mar, 21 jun, 23 sep, 21 dic) a cualquier hora, con recorrido animado
+    y exportación en PNG de los cuatro días a la misma hora.
+  - *Horas de sol directo* sobre los volúmenes analizados en el día elegido (paso de 10 min).
+  - *Radiación acumulada* anual, de verano y de invierno (kWh/m²) con sombras del contexto y de los propios
+    volúmenes: cielo acumulado del EPW en 577 zonas (Reinhart), radiación directa por zona, difusa isótropa
+    y reflejo del suelo (albedo configurable). Es un cálculo de radiación incidente por trazado de rayos en
+    el navegador (sin rebotes entre edificios); para luz natural con interreflexiones hace falta Radiance.
+  - Resultados por volumen (superficie, media, máximo, total) y CSV punto a punto.
+  - El modelo se lee con rhino3dm.js: se usan las mallas de render guardadas en el archivo. Si se guardó con
+    «Guardar pequeño», las caras planas se reconstruyen; las curvas sin malla se aproximan. Código en
+    `app/static/radiation3d/` (three.js y rhino3dm desde CDN; todo se calcula en local, el modelo no sale del ordenador).
 
 1. Sube el `.epw`.
 2. Ajusta idioma, tipografía, encabezado, pie de página, umbrales y las láminas a incluir.
@@ -78,7 +92,7 @@ report/primitives.py     primitivas de dibujo en mm (una sola geometría para to
 report/writers/          svg.py · pdf.py (reportlab) · pptx.py (python-pptx)
 report/text/             prompts.py (datos en frases + guion + ejemplo) · llm.py (Ollama / LM Studio)
 report/fonts.py          fuentes TTF del sistema o de fonts/ + medición para cortar líneas igual siempre
-app/                     FastAPI + HTML/JS sin dependencias de build (app/static/sunexplore = pestaña SunExplore)
+app/                     FastAPI + HTML/JS sin dependencias de build (app/static/sunexplore = pestaña SunExplore, app/static/radiation3d = sombras y radiación 3D)
 cli.py                   generación por línea de comandos
 tests/                   test de determinismo y tamaño A3
 ```
