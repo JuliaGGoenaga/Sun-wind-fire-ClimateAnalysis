@@ -13,7 +13,7 @@ const MAX_POINTS = 150000;
 const $ = (id) => document.getElementById(id);
 const S = {
   rh: null, model: null, epw: null, roles: new Map(), meshes: new Map(), offset: [0, 0, 0], radius: 50,
-  mode: "shadow", period: "annual", radiation: null, sunhours: null, sceneKey: null, playing: false,
+  home: new THREE.Vector3(), mode: "shadow", period: "annual", radiation: null, sunhours: null, sceneKey: null, playing: false,
 };
 
 // ---------------------------------------------------------------- status / busy
@@ -37,9 +37,32 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100000);
 camera.up.set(0, 0, 1);
 camera.position.set(-80, -120, 90);
+// Navigation: left drag = orbit, right drag / shift + left = pan, wheel = zoom towards the cursor,
+// double click = orbit around that point. Damped (inertia) and rendered on demand.
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = false;
+controls.enableDamping = true;
+controls.dampingFactor = 0.12;
+controls.rotateSpeed = 0.7;
+controls.zoomSpeed = 1.1;
+controls.panSpeed = 0.9;
+controls.zoomToCursor = true;
+controls.screenSpacePanning = true;
+controls.maxPolarAngle = Math.PI * 0.495;  // do not go under the ground
+controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
 controls.addEventListener("change", render);
+renderer.domElement.addEventListener("contextmenu", (e) => e.preventDefault());
+
+let fly = null;  // smooth transition to a preset view
+(function loop() {
+  requestAnimationFrame(loop);
+  if (fly) {
+    const f = Math.min(1, (performance.now() - fly.t0) / fly.ms), k = f < 0.5 ? 2 * f * f : 1 - (-2 * f + 2) ** 2 / 2;
+    camera.position.lerpVectors(fly.p0, fly.p1, k);
+    controls.target.lerpVectors(fly.q0, fly.q1, k);
+    if (f >= 1) fly = null;
+  }
+  controls.update();  // fires "change" -> render only while something moves
+})();
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa0ad, 1.1));
 const sun = new THREE.DirectionalLight(0xffffff, 3.2);
@@ -78,13 +101,27 @@ function render() {
   $("compass").style.transform = `rotate(${ang}deg)`;
 }
 
-function setCamera(kind) {
-  const R = S.radius, t = controls.target;
-  if (kind === "top") camera.position.set(t.x, t.y - 0.001, t.z + R * 3.2);
-  else camera.position.set(t.x - R * 1.4, t.y - R * 2.0, t.z + R * 1.5);
-  camera.near = R / 200; camera.far = R * 50; camera.updateProjectionMatrix();
-  controls.update(); render();
+function setCamera(kind, animate = true) {
+  const R = S.radius, t = S.home.clone();
+  const dist = R / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * (camera.aspect < 1 ? 1.25 : 0.82);
+  const dir = { top: new THREE.Vector3(0, -0.001, 1), axo: new THREE.Vector3(-0.55, -0.8, 0.62) }[kind]
+    || camera.position.clone().sub(controls.target);  // "fit": keep the angle, frame the model
+  const p1 = t.clone().add(dir.normalize().multiplyScalar(dist));
+  camera.near = R / 500; camera.far = R * 60; camera.updateProjectionMatrix();
+  if (!animate) { camera.position.copy(p1); controls.target.copy(t); controls.update(); render(); return; }
+  fly = { t0: performance.now(), ms: 450, p0: camera.position.clone(), p1, q0: controls.target.clone(), q1: t };
 }
+
+// double click on the model: orbit around that point
+renderer.domElement.addEventListener("dblclick", (e) => {
+  const r = renderer.domElement.getBoundingClientRect();
+  ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
+  const hit = ray.intersectObjects(modelGroup.children.concat(resultGroup.children, [ground]).filter((m) => m.visible), false)[0];
+  if (!hit) return;
+  const shift = hit.point.clone().sub(controls.target);
+  fly = { t0: performance.now(), ms: 350, p0: camera.position.clone(), p1: camera.position.clone().add(shift),
+    q0: controls.target.clone(), q1: hit.point.clone() };
+});
 
 // ---------------------------------------------------------------- model
 const north = () => Number($("north").value) || 0;
@@ -122,7 +159,7 @@ async function loadModel(file) {
     buildScene();
     renderLayers();
     clearResults();
-    setCamera("axo");
+    setCamera("axo", false);
     status(S.epw ? "Modelo cargado. Elige los volúmenes a analizar." : "Modelo cargado. Falta el EPW (botón de la barra superior).");
   } catch (e) {
     status(e.message || String(e), true);
@@ -161,7 +198,8 @@ function buildScene() {
   ground.geometry.dispose();
   ground.geometry = new THREE.PlaneGeometry(R * 12, R * 12);
   ground.position.set(0, 0, -0.02);
-  controls.target.set(0, 0, size.z * 0.3);
+  S.home.set(0, 0, size.z * 0.35);
+  controls.target.copy(S.home);
   sunBall.scale.setScalar(R * 0.035);
   $("empty").hidden = true;
   applyRoles();
@@ -221,8 +259,14 @@ function renderLayers() {
 // click on a volume: context <-> analysis
 const ray = new THREE.Raycaster(), down = new THREE.Vector2();
 renderer.domElement.addEventListener("pointerdown", (e) => down.set(e.clientX, e.clientY));
+let clickTimer = null;
+renderer.domElement.addEventListener("dblclick", () => { clearTimeout(clickTimer); clickTimer = null; });
 renderer.domElement.addEventListener("pointerup", (e) => {
-  if (e.button !== 0 || !S.model || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 4) return;
+  if (e.button !== 0 || e.shiftKey || !S.model || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 4) return;
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(() => toggleAt(e), 260);  // wait: a double click centres the view instead
+});
+function toggleAt(e) {
   const r = renderer.domElement.getBoundingClientRect();
   ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
   const targets = modelGroup.children.filter((m) => m.visible).concat(resultGroup.children.filter((m) => m.visible));
@@ -230,7 +274,7 @@ renderer.domElement.addEventListener("pointerup", (e) => {
   if (!hit) return;
   const id = hit.object.userData.id;
   setRole([id], S.roles.get(id) === "analysis" ? "context" : "analysis");
-});
+}
 
 // ---------------------------------------------------------------- sun / shadows
 function fillDays() {
