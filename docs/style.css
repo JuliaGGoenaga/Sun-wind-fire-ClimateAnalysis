@@ -105,6 +105,8 @@ select {
 }
 input[type=number] { -moz-appearance: textfield; }
 input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+/* API key: hidden characters without being a password field (avoids the browser's password autofill) */
+input.masked { -webkit-text-security: disc; text-security: disc; }
 input::placeholder, textarea::placeholder { color: #a3a9b6; }
 input:focus, select:focus, textarea:focus {
   outline: none; border-color: var(--accent-2); box-shadow: 0 0 0 3px var(--accent-soft);
