@@ -117,9 +117,13 @@ const update = ({ width, height, horizontalEnabled, horizontalLength, verticalEn
   if (verticalEnabled && verticalLength > 0) {
     const finThickness = 0.07;
     const finHeight = Math.max(height - 0.04, 0.05);
-    const finX = verticalSide === "left" ? windowLeft + finThickness / 2 : windowRight - finThickness / 2;
     const projection = verticalLength + wallFront;
-    addBox(finThickness, finHeight, projection, finX, windowBottom + finHeight / 2, projection / 2, materials.vertical);
+    const finXs = [];
+    if (verticalSide === "left" || verticalSide === "both") finXs.push(windowLeft + finThickness / 2);
+    if (verticalSide !== "left") finXs.push(windowRight - finThickness / 2);
+    for (const finX of finXs) {
+      addBox(finThickness, finHeight, projection, finX, windowBottom + finHeight / 2, projection / 2, materials.vertical);
+    }
   }
 
   const groundDepth = Math.max(horizontalEnabled ? horizontalLength : 0, verticalEnabled ? verticalLength : 0, 0.45) + wallDepth;

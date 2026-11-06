@@ -161,8 +161,12 @@ function makeChartTraces(climate, records, orientation, shadeOptions = {}) {
   }
   if (shadeOptions.verticalEnabled) {
     const angle = Math.atan(Math.max(Number(shadeOptions.verticalLength) || 0, 0) / REFERENCE_WINDOW_DIMENSION) * 180 / Math.PI;
-    const chartSide = shadeOptions.verticalSide === "left" ? "right" : "left";
-    if (angle > 0) shadeTraces.push(makeShadeTrace(verticalShadePolygon(orientation, angle, chartSide)));
+    // side as seen from outside; "both" = one fin on each side of the window
+    const sides = shadeOptions.verticalSide === "both" ? ["left", "right"] : [shadeOptions.verticalSide];
+    for (const side of sides) {
+      const chartSide = side === "left" ? "right" : "left";
+      if (angle > 0) shadeTraces.push(makeShadeTrace(verticalShadePolygon(orientation, angle, chartSide)));
+    }
   }
 
   traces.push({
