@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Climate report A3</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark"></div>
+    <div>
+      <h1>Análisis climático A3</h1>
+      <p>EPW → PDF · PPTX · SVG</p>
+    </div>
+  </div>
+</header>
+<div class="app">
+<aside>
+
+  <section>
+    <h2><span class="step">1</span> Archivo EPW</h2>
+    <label class="file">
+      <input type="file" id="epw" accept=".epw">
+      <span class="file-btn">Elegir EPW</span>
+      <span class="file-name" id="epw_name">Ningún archivo</span>
+    </label>
+    <span id="loc" class="pill"></span>
+  </section>
+
+  <section>
+    <h2><span class="step">2</span> Formato</h2>
+    <div class="row">
+      <label>Idioma
+        <select id="language"><option value="en">English</option><option value="es">Español</option></select>
+      </label>
+      <label>Tipografía <select id="font"></select></label>
+    </div>
+    <label>Ciudad <input id="city" placeholder="(del EPW)"></label>
+    <label>Encabezado derecho <input id="header_right" placeholder="{city} - Climate analysis"></label>
+    <label>Pie de página <input id="footer_text" placeholder="Proyecto · Fecha · Autor"></label>
+    <div class="row">
+      <label>Refrig. &gt; ºC <input id="cooling_threshold" type="number" step="0.5" value="26"></label>
+      <label>Calef. &lt; ºC <input id="heating_threshold" type="number" step="0.5" value="19"></label>
+      <label>Sol &gt; ºC <input id="sun_threshold" type="number" step="0.5" value="24"></label>
+    </div>
+    <div class="row">
+      <label>Vent. natural ≥ ºC <input id="nv_min" type="number" step="0.5" value="10"></label>
+      <label>Vent. natural ≤ ºC <input id="nv_max" type="number" step="0.5" value="24"></label>
+    </div>
+    <label class="check"><input type="checkbox" id="utci_sun_exposed" checked><span>UTCI al sol (si no, a la sombra)</span></label>
+  </section>
+
+  <section>
+    <h2><span class="step">3</span> Láminas</h2>
+    <p class="muted">Marca las láminas a incluir. El título se puede cambiar (vacío = por defecto).</p>
+    <div id="sheets" class="sheets"></div>
+    <details class="fixed" open>
+      <summary>Protecciones solares (máscaras fijas)</summary>
+      <p class="muted">Método SunExplore, ventana de referencia 1,5 × 1,5 m. Voladizo: ángulo desde la vertical en sección. Lamas: ángulo desde el plano de fachada en planta, lado visto desde fuera.</p>
+      <div id="devices" class="devices"></div>
+    </details>
+  </section>
+
+  <section>
+    <h2><span class="step">4</span> Textos</h2>
+    <div class="row">
+      <label>Motor
+        <select id="backend"><option value="ollama">Ollama</option><option value="lmstudio">LM Studio</option></select>
+      </label>
+      <label>URL <input id="llm_url" placeholder="por defecto"></label>
+    </div>
+    <div class="row">
+      <label>Modelo <select id="model"></select></label>
+      <button id="refresh" class="ghost" title="Buscar modelos">↻</button>
+    </div>
+    <span id="llmstatus" class="pill"></span>
+    <div class="row">
+      <button id="gen">Generar con LLM</button>
+      <button id="copyprompt" class="ghost">Copiar prompt</button>
+    </div>
+    <p class="muted">Sin LLM: copia el prompt, pégalo en otro asistente y pega aquí el JSON de respuesta, o escribe los textos a mano. Separa los párrafos con una línea en blanco.</p>
+    <label>Pegar respuesta JSON <textarea id="paste" rows="2" placeholder='{"temperature_text": "...", "sun_text": "..."}'></textarea></label>
+    <label><span class="lbl">Texto lámina 1 (temperatura)<span class="count" id="temperature_text_count"></span></span><textarea id="temperature_text" rows="8"></textarea></label>
+    <label><span class="lbl">Texto lámina 2 (sol)<span class="count" id="sun_text_count"></span></span><textarea id="sun_text" rows="8"></textarea></label>
+    <details class="fixed">
+      <summary>Textos base de método (viento, ventilación, protección solar)</summary>
+      <p class="muted">Son fijos para cualquier EPW y explican cómo se hace el análisis. Déjalos vacíos para usar el texto base o escribe uno propio.</p>
+      <label><span class="lbl">Ventilación natural y humedad<span class="count" id="ventilation_text_count"></span></span><textarea id="ventilation_text" rows="5"></textarea></label>
+      <label><span class="lbl">Protección solar<span class="count" id="shading_text_count"></span></span><textarea id="shading_text" rows="5"></textarea></label>
+      <label><span class="lbl">Viento<span class="count" id="wind_text_count"></span></span><textarea id="wind_text" rows="5"></textarea></label>
+      <label><span class="lbl">Viento estacional<span class="count" id="seasonal_wind_text_count"></span></span><textarea id="seasonal_wind_text" rows="4"></textarea></label>
+    </details>
+  </section>
+
+  <section class="actions">
+    <h2><span class="step">5</span> Exportar</h2>
+    <button id="render">Actualizar vista previa</button>
+    <div class="row">
+      <button data-fmt="pdf" class="dl">PDF</button>
+      <button data-fmt="pptx" class="dl">PPTX</button>
+      <button data-fmt="svg" class="dl">SVG</button>
+    </div>
+  </section>
+</aside>
+
+<main id="preview"><div class="empty">Sube un archivo EPW para empezar.</div></main>
+</div>
+
+<div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-live="polite">
+  <div class="modal">
+    <div class="sunloader"><div class="ring"></div><div class="orbit"><div class="sun"></div></div><div class="core">A3</div></div>
+    <h3 id="busy-title">Procesando…</h3>
+    <p id="busy-text"></p>
+    <p class="elapsed muted" id="busy-elapsed"></p>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

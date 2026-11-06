@@ -1,0 +1,16 @@
+# environments / caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# generated output and uploaded runs
+out/
+runs/
+
+# private / large inputs (kept locally, not in the repo)
+assets/*.png
+assets/*.svg
+tests/fixtures/*.epw
+fonts/*.ttf

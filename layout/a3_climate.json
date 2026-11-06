@@ -1,0 +1,485 @@
+{
+ "_comment": "All positions in millimetres on an A3 landscape sheet (420 x 297). Origin top-left. Measured from the IDOM reference sheets.",
+ "page": {
+  "width": 420,
+  "height": 297
+ },
+ "colors": {
+  "title": "#2a45a5",
+  "rule": "#9d9d9d",
+  "grid_dark": "#6e2b2b",
+  "grid": "#333333",
+  "grid_light": "#9a9a9a",
+  "dbt_band": "#4a6fb0",
+  "dbt_mean": "#9b2a2a",
+  "ghr": "#e82800",
+  "ghr_legend": "#c80002",
+  "sun": "#ffd400",
+  "text": "#000000",
+  "wind_sector": "#3049a8",
+  "wind_sector_fill": "#d5def7"
+ },
+ "palettes": {
+  "utci_11": [
+   "#ec2402",
+   "#f14500",
+   "#ed7000",
+   "#ee940a",
+   "#f5c82d",
+   "#f9eb56",
+   "#e4e390",
+   "#bdcede",
+   "#a0bef0",
+   "#6c8dc3",
+   "#496dab"
+  ],
+  "temperature_ramp": [
+   "#4b6ba9",
+   "#7393ca",
+   "#aac8f7",
+   "#c1d5d0",
+   "#f5ef67",
+   "#fce64a",
+   "#ef9c15",
+   "#ea7b00",
+   "#ea4a00",
+   "#ea2600"
+  ]
+ },
+ "fonts": {
+  "header": 10.5,
+  "body": 10.5,
+  "body_min": 9.0,
+  "body_leading": 1.16,
+  "chart_title": 10.5,
+  "caption": 9.0
+ },
+ "header": {
+  "y": 9.2,
+  "rule_y": 12.0,
+  "x0": 10.0,
+  "x1": 410.0
+ },
+ "footer": {
+  "rule_y": 289.6,
+  "x0": 10.0,
+  "x1": 388.5,
+  "text_y": 287.6,
+  "logo": {
+   "x": 390.0,
+   "y": 284.6,
+   "w": 20.0,
+   "h": 5.8
+  }
+ },
+ "temperature_legend": {
+  "min": 0.0,
+  "max": 43.0,
+  "segments": 10
+ },
+ "sheet_order": [
+  "temperature",
+  "ventilation",
+  "sun",
+  "shading",
+  "wind",
+  "seasonal_wind"
+ ],
+ "temperature": {
+  "text": {
+   "x": 10.0,
+   "y": 17.0,
+   "w": 70.0,
+   "h": 98.0,
+   "max_words": 130,
+   "paragraphs": 4
+  },
+  "comfort": {
+   "title_x": 91.5,
+   "title_y": 22.5,
+   "box": {
+    "x": 110.3,
+    "y": 29.8,
+    "w": 265.7,
+    "h": 69.9
+   },
+   "legend": {
+    "x": 379.5,
+    "y": 31.0,
+    "w": 2.6,
+    "row": 6.35
+   }
+  },
+  "monthly": {
+   "title_x": 91.8,
+   "title_y": 113.6,
+   "subtitle_y": 117.8,
+   "box": {
+    "x": 120.2,
+    "y": 129.7,
+    "w": 252.0,
+    "h": 78.8
+   },
+   "temp_range": "auto",
+   "legend": {
+    "x": 11.5,
+    "y": 185.6,
+    "w": 6.8,
+    "h": 9.5,
+    "gap": 2.0,
+    "label_x": 21.6
+   }
+  },
+  "cooling": {
+   "title_x": 20.1,
+   "title_y": 228.4,
+   "box": {
+    "x": 19.6,
+    "y": 233.7,
+    "w": 148.4,
+    "h": 39.2
+   },
+   "legend": {
+    "x": 170.2,
+    "y": 236.0,
+    "w": 2.6,
+    "h": 37.0
+   }
+  },
+  "heating": {
+   "title_x": 219.0,
+   "title_y": 228.4,
+   "box": {
+    "x": 219.1,
+    "y": 233.7,
+    "w": 148.9,
+    "h": 39.2
+   },
+   "legend": {
+    "x": 369.8,
+    "y": 236.0,
+    "w": 2.6,
+    "h": 37.0
+   }
+  }
+ },
+ "sun": {
+  "text": {
+   "x": 10.0,
+   "y": 17.0,
+   "w": 80.0,
+   "h": 125.0,
+   "max_words": 175,
+   "paragraphs": 5
+  },
+  "plan_views": {
+   "_comment": "Key-day sun paths in stereographic projection (plan)",
+   "centers_x": [
+    156.4,
+    261.6,
+    366.7
+   ],
+   "center_y": 71.3,
+   "ring_radius": 40.0
+  },
+  "side": {
+   "_comment": "Elevation (alzado): 3D ladybug sun path seen by an orthographic camera",
+   "ground_y": 160.6,
+   "ground_half_width": 41.0,
+   "radius": 37.0,
+   "offset_x": -6.0,
+   "camera": {
+    "azimuth": 270.0,
+    "elevation": 0.0
+   }
+  },
+  "captions": {
+   "x": [
+    151.0,
+    261.0,
+    366.7
+   ],
+   "y1": 170.6,
+   "y2": 174.0
+  },
+  "stereo": {
+   "centers_x": [
+    63.8,
+    163.0,
+    262.1,
+    361.2
+   ],
+   "center_y": 239.3,
+   "radius": 31.5,
+   "legend_dx": 38.0,
+   "legend_y": 247.0,
+   "legend_w": 2.6,
+   "legend_h": 27.4,
+   "caption_y": 283.2,
+   "point_radius": 0.55
+  }
+ },
+ "ventilation": {
+  "text": {
+   "x": 10.0,
+   "y": 17.0,
+   "w": 62.0,
+   "h": 90.0,
+   "max_words": 110,
+   "paragraphs": 3
+  },
+  "range": {
+   "min": 10.0,
+   "max": 24.0
+  },
+  "nv": {
+   "title_x": 99.6,
+   "title_y": 21.5,
+   "box": {
+    "x": 111.9,
+    "y": 29.4,
+    "w": 263.4,
+    "h": 69.3
+   },
+   "legend": {
+    "x": 378.8,
+    "y": 31.8,
+    "w": 2.6,
+    "h": 67.0
+   }
+  },
+  "humidity": {
+   "title_x": 99.6,
+   "title_y": 114.5,
+   "boxes": [
+    {
+     "x": 105.0,
+     "y": 119.9,
+     "w": 152.8,
+     "h": 40.3
+    },
+    {
+     "x": 105.0,
+     "y": 178.3,
+     "w": 152.8,
+     "h": 40.3
+    },
+    {
+     "x": 105.0,
+     "y": 236.7,
+     "w": 152.8,
+     "h": 40.3
+    }
+   ],
+   "legend_dx": 2.2,
+   "legend_w": 2.4,
+   "label_dy": 9.5
+  },
+  "monthly_box": {
+   "x": 286.1,
+   "y": 109.7,
+   "w": 95.9,
+   "h": 175.1,
+   "title_dx": 5.4,
+   "title_dy": 4.6,
+   "grid": {
+    "x": 293.5,
+    "y": 121.0,
+    "cols": 4,
+    "rows": 3,
+    "w": 15.6,
+    "h": 43.5,
+    "dx": 21.8,
+    "dy": 54.4
+   }
+  }
+ },
+ "wind": {
+  "text": {
+   "x": 10.0,
+   "y": 17.0,
+   "w": 62.0,
+   "h": 82.0,
+   "max_words": 110,
+   "paragraphs": 3
+  },
+  "roses": {
+   "centers_x": [
+    120.1,
+    200.3,
+    280.5,
+    360.8
+   ],
+   "center_y": 57.2,
+   "radius": 26.5,
+   "title_y": 19.4,
+   "legend_dx": 33.5,
+   "legend_y": 47.5,
+   "legend_w": 2.4,
+   "legend_h": 40.0
+  },
+  "table": {
+   "x0": 9.8,
+   "x1": 186.9,
+   "y0": 103.8,
+   "y1": 125.2,
+   "col0": 13.5
+  },
+  "sectors": {
+   "box_x": 18.1,
+   "box_w": 118.3,
+   "tops": [
+    132.6,
+    171.2,
+    209.9,
+    248.5
+   ],
+   "h": 31.2,
+   "legend_x": 137.9,
+   "icon_x": 159.6,
+   "icon_r": 8.2
+  },
+  "big": {
+   "cx": 301.3,
+   "cy": 196.3,
+   "radius": 57.0,
+   "legend_x": 375.2,
+   "legend_y": 175.0,
+   "legend_w": 4.6,
+   "legend_h": 91.7
+  }
+ },
+ "seasonal_wind": {
+  "text": {
+   "x": 10.0,
+   "y": 17.0,
+   "w": 62.0,
+   "h": 60.0,
+   "max_words": 70,
+   "paragraphs": 2
+  },
+  "roses": {
+   "centers_x": [
+    120.1,
+    200.3,
+    280.5,
+    360.8
+   ],
+   "rows_y": [
+    57.2,
+    151.3,
+    245.3
+   ],
+   "radius": 26.5,
+   "titles_y": [
+    [
+     19.4
+    ],
+    [
+     110.7,
+     113.6
+    ],
+    [
+     204.8,
+     207.7
+    ]
+   ],
+   "legend_dx": 33.5,
+   "legend_dy": -9.7,
+   "legend_w": 2.4,
+   "legend_h": 40.0
+  },
+  "day_hours": [
+   8,
+   18
+  ]
+ },
+ "shading": {
+  "text": {
+   "x": 10.0,
+   "y": 17.0,
+   "w": 62.0,
+   "h": 105.0,
+   "max_words": 120,
+   "paragraphs": 3
+  },
+  "big": {
+   "cx": 66.6,
+   "cy": 198.6,
+   "radius": 48.0,
+   "legend": {
+    "x": 7.8,
+    "y": 269.2,
+    "w": 121.5,
+    "h": 6.9,
+    "title_y": 266.0
+   },
+   "range": {
+    "min": 0.0,
+    "max": 35.0,
+    "segments": 10
+   }
+  },
+  "masks": {
+   "centers": [
+    [
+     211.9,
+     64.4
+    ],
+    [
+     342.8,
+     64.4
+    ],
+    [
+     211.9,
+     195.5
+    ],
+    [
+     342.8,
+     195.5
+    ]
+   ],
+   "radius": 35.0,
+   "diagram_dy": [
+    52.0,
+    61.0
+   ],
+   "devices": [
+    {
+     "facade_az": 180,
+     "overhang_deg": 30,
+     "fin_deg": 30,
+     "fin_side": "right",
+     "type": "both"
+    },
+    {
+     "facade_az": 0,
+     "overhang_deg": 30,
+     "fin_deg": 30,
+     "fin_side": "right",
+     "type": "both"
+    },
+    {
+     "facade_az": 90,
+     "overhang_deg": 30,
+     "fin_deg": 30,
+     "fin_side": "right",
+     "type": "both"
+    },
+    {
+     "facade_az": 270,
+     "overhang_deg": 30,
+     "fin_deg": 30,
+     "fin_side": "left",
+     "type": "both"
+    }
+   ]
+  },
+  "point_radius": 1.05
+ },
+ "wind_legend": {
+  "min": 0.0,
+  "max": 15.0,
+  "segments": 10
+ }
+}

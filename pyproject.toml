@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "climate-report"
+version = "0.1.0"
+description = "A3 climate analysis sheets (PDF / PPTX / SVG) from any EPW file, with ladybug and a local LLM"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "ladybug-core==0.45.0",
+  "ladybug-geometry==1.35.7",
+  "ladybug-comfort==0.19.15",
+  "python-pptx==1.0.2",
+  "reportlab==5.1.0",
+  "pymupdf==2.1",
+  "fonttools==4.68.0",
+  "fastapi==0.162.0",
+  "uvicorn==0.54.0",
+  "python-multipart==0.0.33",
+  "httpx==0.28.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+svglogo = ["svglib"]
+
+[tool.setuptools.packages.find]
+include = ["report*", "app*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
