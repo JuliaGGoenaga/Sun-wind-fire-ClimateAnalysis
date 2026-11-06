@@ -33,8 +33,9 @@ async function loadSheets() {
     <label class="sheet-row check"><input type="checkbox" id="sheet_${x.key}" checked>
       <input type="text" id="title_${x.key}" placeholder="${x.title}"></label>`).join("");
   for (const k of SHEETS) {
-    $(`sheet_${k}`).addEventListener("change", () => RID && render());
+    $(`sheet_${k}`).addEventListener("change", () => { updateSheetsSummary(); if (RID) render(); });
   }
+  updateSheetsSummary();
   const opts = (pairs, v) => pairs.map(([o, t]) => `<option value="${o}"${o === v ? " selected" : ""}>${t}</option>`).join("");
   const TYPES = [["none", "Sin protección"], ["overhang", "Voladizo"], ["fins", "Lamas verticales"], ["both", "Voladizo + lamas"]];
   const SIDES = [["right", "Derecha"], ["left", "Izquierda"], ["both", "Ambos lados"]];
@@ -62,6 +63,10 @@ async function loadSheets() {
     row.querySelectorAll("input, select").forEach((el) => el.addEventListener("change", () => { syncDev(row); if (RID) render(); }));
   });
   await refreshDefaults();
+}
+function updateSheetsSummary() {
+  const n = SHEETS.filter((k) => $(`sheet_${k}`)?.checked).length;
+  $("sheets-summary").textContent = `Láminas incluidas · ${n} de ${SHEETS.length}`;
 }
 function settings0() {  // settings without the sheet widgets (used before they exist)
   const s = {};
