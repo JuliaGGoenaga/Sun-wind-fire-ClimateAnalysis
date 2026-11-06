@@ -1,0 +1,52 @@
+/* climate-report: SunExplore tab.
+   Base look (colours, side panel, fields, buttons) comes from ../style.css, the stylesheet of the
+   climate analysis tab, so both tabs share exactly the same format. Only SunExplore-specific
+   pieces are defined here. */
+
+/* inside the climate-report tab the outer page already has the top bar */
+body.is-embedded .se-standalone { display: none; }
+
+/* file picker: name + hint on two lines */
+.file-text { display: flex; flex-direction: column; min-width: 0; }
+.file-hint { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
+.se-location.is-loaded { background: #e3f4ea; color: #1d6b43; }
+.se-location:not(.is-loaded) { background: var(--card); color: var(--muted); }
+#status.is-error { color: #b3261e; font-weight: 600; }
+
+/* range sliders */
+input.range {
+  height: 20px; padding: 0; border: 0; background: transparent; accent-color: var(--accent); box-shadow: none;
+}
+input.range:focus { box-shadow: none; }
+label .lbl output { font-variant-numeric: tabular-nums; color: var(--ink); }
+
+/* right side: chart + 3D model */
+.se-main {
+  --field-h: 32px;
+  overflow-y: auto; padding: 4px; display: grid; gap: 20px; align-content: start;
+  align-items: start; /* ../style.css centres <main>; both cards start at the top */
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+}
+.se-card {
+  background: var(--panel); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+}
+.se-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.se-card-head h3 { margin: 2px 0 0; font-size: 16px; color: var(--ink); }
+.se-eyebrow {
+  margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600;
+}
+.se-model-actions { display: flex; align-items: center; gap: 8px; }
+.se-model-actions .ghost { width: var(--field-h, 32px); padding: 0; }
+.se-foot { margin: 0; }
+
+#solar-chart { width: 100%; height: min(72vh, 680px); min-height: 420px; }
+.shade-canvas {
+  width: 100%; height: min(52vh, 460px); min-height: 300px; border-radius: 10px; overflow: hidden;
+  background: var(--card); border: 1px solid var(--line);
+}
+.shade-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+
+@media (max-width: 1200px) {
+  .se-main { grid-template-columns: 1fr; }
+}

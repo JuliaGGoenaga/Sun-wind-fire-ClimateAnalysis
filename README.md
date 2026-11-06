@@ -38,6 +38,27 @@ Sin webapp:
 .venv/bin/python cli.py ciudad.epw --out out --texts textos.json --settings ajustes.json
 ```
 
+### Versión web sin instalación (GitHub Pages, Python en el navegador)
+
+La carpeta `docs/` es la misma web pero **sin servidor**: el código Python de `report/` se ejecuta en
+el navegador con [Pyodide](https://pyodide.org) (en un *web worker*), y el PDF / PPTX / SVG se montan en
+el propio navegador (jsPDF + svg2pdf, PptxGenJS, JSZip). Nada se sube a ningún servidor.
+
+- **Publicar**: GitHub → *Settings → Pages → Deploy from a branch* → rama y carpeta `/docs`.
+- **Reconstruir** `docs/` después de cambiar `report/`, `layout/` o `app/static/`:
+  `python tools/build_web.py`.
+- **Primera carga**: 2–5 s (descarga Python y ladybug; luego queda en caché del navegador).
+- **Logo**: se sube desde la ventana del EPW (botón «Logo»); se recuerda en ese navegador.
+- **Tipografías**: Arial, Verdana, Georgia, Tahoma, Trebuchet MS, Times New Roman, Courier New
+  (`report/font_metrics/` guarda solo los anchos de los caracteres; el texto se dibuja con la fuente del
+  ordenador). En el PDF del navegador se usan las fuentes estándar del PDF (Helvetica / Times / Courier).
+- **LLM**: la web llama directamente al Ollama / LM Studio del ordenador de cada usuario. Hay que permitir
+  la web una vez:
+  - Ollama (Mac): `launchctl setenv OLLAMA_ORIGINS "https://juliaggoenaga.github.io"` y reiniciar Ollama
+    (Windows: variable de entorno `OLLAMA_ORIGINS` con esa URL).
+  - LM Studio: *Developer → Settings → Enable CORS*.
+  Si no, queda el modo manual (copiar el prompt y pegar la respuesta).
+
 ### Archivos que no están en el repo
 
 - **Logo**: copia el logo en `assets/idom_logo.svg` (vectorial, necesita `pip install svglib`) o
@@ -78,5 +99,9 @@ report/text/             prompts.py (datos en frases + guion + ejemplo) · llm.p
 report/fonts.py          fuentes TTF del sistema o de fonts/ + medición para cortar líneas igual siempre
 app/                     FastAPI + HTML/JS sin dependencias de build (app/static/sunexplore = pestaña SunExplore)
 cli.py                   generación por línea de comandos
+report/web.py            funciones para la versión del navegador (Pyodide)
+web/                     backend.js (responde a /api/... en el navegador) · worker.js (Pyodide)
+tools/build_web.py       genera docs/ (GitHub Pages) · tools/make_font_metrics.py (tablas de anchos)
+docs/                    versión estática generada (no editar a mano)
 tests/                   test de determinismo y tamaño A3
 ```

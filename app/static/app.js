@@ -111,8 +111,12 @@ async function withBusy(title, text, fn) {
   finally { idle(); }
 }
 
+// In the GitHub Pages build, web/backend.js defines window.LOCAL_API: the same "/api/..." calls are
+// answered inside the browser (Python in Pyodide) instead of by the FastAPI server.
+const transport = (path, opts) => (window.LOCAL_API ? window.LOCAL_API(path, opts) : fetch(path, opts));
+
 async function api(path, body, raw = false) {
-  const r = await fetch(path, body === undefined ? {} : {
+  const r = await transport(path, body === undefined ? {} : {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
   });
   if (raw) return r;
@@ -174,7 +178,7 @@ async function loadEpw(f) {
   await withBusy("Analizando el EPW", "Calculando confort UTCI y posiciones solares…", async () => {
     const fd = new FormData();
     fd.append("file", f);
-    const r = await fetch("/api/upload", { method: "POST", body: fd });
+    const r = await transport("/api/upload", { method: "POST", body: fd });
     const j = await r.json();
     if (!r.ok) throw new Error(j.detail || "Error al leer el EPW");
     RID = j.id;
@@ -273,7 +277,8 @@ for (const id of ["language", "nv_min", "nv_max", "sun_threshold"]) $(id).addEve
 // ---------- tabs: climate analysis / SunExplore (same EPW in both)
 let sunexploreName = null;
 function sunexploreMsg(name) {
-  return { type: "load-epw", url: `/api/${RID}/epw`, name: name || "climate.epw", minT: $("sun_threshold").value };
+  return { type: "load-epw", url: window.EPW_URL || `/api/${RID}/epw`, name: name || "climate.epw",
+           minT: $("sun_threshold").value };
 }
 function sendEpwToSunExplore(name) {
   sunexploreName = name;

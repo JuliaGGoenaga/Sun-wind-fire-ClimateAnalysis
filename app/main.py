@@ -18,7 +18,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from report.build import load_climate, render, to_pdf, to_pptx, to_svg_zip, to_svgs  # noqa: E402
-from report.fonts import available_fonts, default_font  # noqa: E402
+from report.fonts import default_font, font_choices  # noqa: E402
 from report.settings import DEFAULT_SETTINGS, FIXED_TEXT_KEYS, LABELS, SHEETS, load_layout, method_text, resolve  # noqa: E402
 from report.text import llm  # noqa: E402
 from report.text.prompts import (build_prompt, build_text_prompt, detect_language, fit_text, limits,  # noqa: E402
@@ -60,7 +60,7 @@ def index():
 
 @app.get("/api/fonts")
 def fonts():
-    return {"fonts": list(available_fonts().keys()), "default": default_font()}
+    return {"fonts": font_choices(), "default": default_font()}
 
 
 @app.post("/api/upload")
