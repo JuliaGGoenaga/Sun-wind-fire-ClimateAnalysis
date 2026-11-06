@@ -90,8 +90,8 @@
    "x": 10.0,
    "y": 17.0,
    "w": 70.0,
-   "h": 98.0,
-   "max_words": 130,
+   "h": 160.0,
+   "max_words": 150,
    "paragraphs": 4
   },
   "comfort": {

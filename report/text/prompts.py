@@ -276,12 +276,16 @@ PLAN = {
                "de invierno).",
                "La demanda dominante y sus meses.",
                "La otra demanda (secundaria) y sus meses.",
-               "El principal reto de diseño bioclimático, coherente con la demanda dominante."],
+               "El principal reto de diseño bioclimático, coherente con la demanda dominante, y una frase final "
+               "indicando que el diseño debe considerar escenarios de sobrecalentamiento por el cambio climático "
+               "(más horas calurosas y olas de calor en el futuro), también en climas donde hoy domina la calefacción."],
         "en": ["Climate type, character of summers and winters and typical temperatures (hottest months and winter "
                "range).",
                "The dominant demand and its months.",
                "The other (secondary) demand and its months.",
-               "The main bioclimatic design challenge, coherent with the dominant demand."],
+               "The main bioclimatic design challenge, coherent with the dominant demand, and a closing sentence "
+               "stating that the design should consider overheating scenarios due to climate change (more hot "
+               "hours and heatwaves in the future), also in climates where heating dominates today."],
     },
     "sun_text": {
         "es": ["Radiación solar a lo largo del año y lo que muestra la carta solar filtrada por temperatura.",
