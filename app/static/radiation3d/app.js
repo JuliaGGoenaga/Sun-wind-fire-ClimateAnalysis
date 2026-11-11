@@ -13,7 +13,9 @@ const MAX_POINTS = 150000;
 const $ = (id) => document.getElementById(id);
 const S = {
   rh: null, model: null, epw: null, roles: new Map(), meshes: new Map(), offset: [0, 0, 0], radius: 50,
-  home: new THREE.Vector3(), mode: "shadow", period: "annual", radiation: null, sunhours: null, sceneKey: null, playing: false,
+  home: new THREE.Vector3(), mode: "shadow", period: "annual",
+  // legend range per period (kWh/m2); an empty field means "auto" (min-max of the results)
+  ranges: { annual: [0, 1300], summer: [0, 500], winter: [0, 500] }, radiation: null, sunhours: null, sceneKey: null, playing: false,
 };
 
 // ---------------------------------------------------------------- status / busy
@@ -529,8 +531,8 @@ function showResults() {
   $("view-title").textContent = cur ? cur.title : "Sombras";
   if (!cur) { render(); return; }
   const auto = cur.fixed || niceRange(cur.vals);
-  const lo = $("lmin").value !== "" ? Number($("lmin").value) : auto[0];
-  const hi = $("lmax").value !== "" ? Number($("lmax").value) : auto[1];
+  const set = S.mode === "radiation" ? S.ranges[S.period] : [null, null];
+  const lo = set[0] ?? auto[0], hi = set[1] ?? auto[1];
   const { grid, vals } = cur, n = vals.length;
   const col = new Float32Array(9 * n), c = new THREE.Color();
   for (let i = 0; i < n; i++) { colorAt((vals[i] - lo) / (hi - lo || 1), c); for (let k = 0; k < 3; k++) col.set([c.r, c.g, c.b], 9 * i + 3 * k); }
@@ -694,10 +696,21 @@ $("run").addEventListener("click", runRadiation);
 $("sunhours").addEventListener("click", runSunHours);
 $("grid").addEventListener("change", clearResults);
 $("albedo").addEventListener("change", () => { if (S.radiation) clearResults(); });
-for (const id of ["lmin", "lmax"]) $(id).addEventListener("input", showResults);
+function fillRange() {
+  const r = S.ranges[S.period];
+  $("lmin").value = r[0] ?? ""; $("lmax").value = r[1] ?? "";
+  $("lmin").placeholder = $("lmax").placeholder = "auto";
+}
+["lmin", "lmax"].forEach((id, k) => $(id).addEventListener("input", () => {
+  const v = $(id).value;
+  S.ranges[S.period][k] = v === "" || !Number.isFinite(Number(v)) ? null : Number(v);
+  showResults();
+}));
+fillRange();
 $("period").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b) return;
   S.period = b.dataset.p;
+  fillRange();
   $("period").querySelectorAll("button").forEach((x) => x.classList.toggle("is-on", x === b));
   if (S.radiation) setMode("radiation");
 });
