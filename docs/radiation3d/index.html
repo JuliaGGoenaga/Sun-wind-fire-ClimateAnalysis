@@ -83,13 +83,14 @@
         <button type="button" data-p="winter">Invierno</button>
       </div>
       <div class="row">
-        <label for="lmin">Leyenda mín.
-          <input id="lmin" type="number" placeholder="auto" autocomplete="off">
+        <label for="lmin">Leyenda mín. kWh/m²
+          <input id="lmin" type="number" value="0" placeholder="auto" autocomplete="off">
         </label>
-        <label for="lmax">Leyenda máx.
-          <input id="lmax" type="number" placeholder="auto" autocomplete="off">
+        <label for="lmax">Leyenda máx. kWh/m²
+          <input id="lmax" type="number" value="1300" placeholder="auto" autocomplete="off">
         </label>
       </div>
+      <p class="muted">La leyenda se guarda por periodo: anual 0–1300, verano e invierno 0–500. Vacía = automática.</p>
       <p class="muted" id="season-info">Cielo acumulado del EPW (577 zonas de cielo, difusa isótropa) con sombras del contexto y de los propios volúmenes.</p>
     </section>
 
